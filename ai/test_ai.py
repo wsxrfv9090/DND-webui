@@ -1,5 +1,7 @@
 from openai import OpenAI
 import json
+import random
+import math
 
 # 初始化 Moonshot AI 客户端
 client = OpenAI(
@@ -7,76 +9,98 @@ client = OpenAI(
     base_url="https://api.moonshot.cn/v1",
 )
 
-# 预设事件列表
-event_list = ["锻炼", "学习", "打工","其他"]
-
-# 角色初始属性
-character_stats = {
-    "智力": 50,
-    "生命值": 100,
-    "攻击力": 30
-}
-
-def match_event(user_input):
-    # 构造提示，要求 AI 从事件列表中选择最匹配的事件
-    prompt = f"""
-    用户输入了一个事件：'{user_input}'。
-    请从以下事件列表中选择最匹配的事件：{event_list}。
-    只返回匹配的事件名称（例如：锻炼），不要返回其他内容。
-    如果没有明确匹配，基于语义选择最接近的事件。
+def analyze_action(user_input):
     """
-    
-    # 调用 Kimi 模型进行事件匹配
+    用AI分析用户输入，返回 (need_judge, skill_name, difficulty)
+    - need_judge: True/False
+    - skill_name: str 或 None
+    - difficulty: int (0/1/2) 或 None
+    """
+    prompt = (
+        f"你是一个TRPG规则裁判AI。用户输入一句话，请你判断：\n"
+        f"1. 这句话是否需要技能判定？\n"
+        f"2. 如果需要，应该用哪个技能？（技能名称必须严格来自技能列表）\n"
+        f"3. 难度是普通(0)、困难(1)还是极难(2)？\n"
+        f"请严格按照如下格式输出：True-技能名称-难度 或 False--\n"
+        f"技能列表：信用评级、说服、侦查、心理学、闪避、格斗、射击、驾驶、图书馆使用、聆听、潜行、妙手、恐吓、法律、医学、急救、攀爬、跳跃、游泳、投掷、取悦、乔装、锁匠、机械维修、计算机使用 Ω、电子学 Ω、科学①、科学②、科学③、外语①、外语②、外语③、母语、历史、考古学、人类学、博物学、导航、神秘学、操作重型机械、爆破、炮术、催眠、读唇、动物驯养、学识、技艺①、技艺②、技艺③\n"
+        f"用户输入：'{user_input}'"
+    )
     completion = client.chat.completions.create(
         model="kimi-k2-0711-preview",
         messages=[
             {
                 "role": "system",
-                "content": "你是 Kimi，由 Moonshot AI 提供的人工智能助手，擅长中文对话。你会为用户提供准确的回答，并从给定列表中选择最匹配的选项。"
+                "content": "你是TRPG规则裁判AI，只输出结构化判定结果。"
             },
             {
                 "role": "user",
                 "content": prompt
             }
         ],
-        temperature=0.6,
+        temperature=0.1,
     )
-    
-    # 获取 AI 返回的匹配事件
-    matched_event = completion.choices[0].message.content.strip()
-    return matched_event
+    ai_reply = completion.choices[0].message.content.strip()
+    # 解析AI输出
+    if ai_reply.startswith("True-"):
+        parts = ai_reply.split("-")
+        skill = parts[1] if len(parts) > 1 else None
+        try:
+            difficulty = int(parts[2]) if len(parts) > 2 else 0
+        except Exception:
+            difficulty = 0
+        return True, skill, difficulty
+    else:
+        return False, None, None
 
-def update_stats(matched_event):
-    # 根据匹配的事件更新角色属性
-    if matched_event == "锻炼":
-        character_stats["生命值"] += 10
-        print(f"事件匹配：{matched_event}，生命值 +10！")
-    if matched_event == "学习":
-        character_stats["智力"] += 10
-        print(f"事件匹配：{matched_event}，智力 +10！")
-    if  matched_event == "打工":
-        character_stats["生命值"] -= 10
-        print(f"事件匹配：{matched_event}，生命值 -10！")
-    if matched_event == "其他":
+def generate_description(user_input, judge_result=None):
+    """
+    用AI生成世界观下的描述。
+    - user_input: 用户原话
+    - judge_result: 判定结果描述（可选）
+    """
+    if judge_result:
+        prompt = (
+            f"你是TRPG世界观的叙述AI。用户刚才说：'{user_input}'，判定结果是：{judge_result}。请用生动的语言描述在这个世界观下发生了什么。"
+        )
+    else:
+        prompt = (
+            f"你是TRPG世界观的叙述AI。用户刚才说：'{user_input}'。请用生动的语言描述在这个世界观下发生了什么。"
+        )
+    completion = client.chat.completions.create(
+        model="kimi-k2-0711-preview",
+        messages=[
+            {
+                "role": "system",
+                "content": "你是TRPG世界观的叙述AI，只输出故事描述。"
+            },
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        temperature=0.7,
+    )
+    return completion.choices[0].message.content.strip()
 
-        print(f"事件匹配：{matched_event}， 没有变化！")
-    
-    # 返回更新后的角色属性
-    return character_stats
+def get_skill_success_rate(skill_name, skills_list):
+    for skill in skills_list:
+        if skill["技能名称"] == skill_name:
+            return skill["成功率"]
+    return 0
 
-def main():
-    # 获取用户输入
-    user_input = input("请输入一个事件（例如：去跑步）：")
-    
-    # 匹配事件
-    matched_event = match_event(user_input)
-    
-    # 更新角色属性
-    updated_stats = update_stats(matched_event)
-    
-    # 打印角色最新属性
-    print("角色当前属性：")
-    print(json.dumps(updated_stats, ensure_ascii=False, indent=2))
+def judge(roll_result, success_rate, difficulty):
+    if difficulty == 0:
+        modifier = 1
+    elif difficulty == 1:
+        modifier = 1/2
+    elif difficulty == 2:
+        modifier = 1/5
+    else:
+        modifier = 1
+    threshold = int(math.floor(success_rate * modifier))
+    return roll_result <= threshold
 
-if __name__ == "__main__":
-    main()
+def describe_action(user_input, skill_name, difficulty, roll_result, success):
+    diff_map = {0: "普通", 1: "困难", 2: "极难"}
+    outcome = "通过" if success else "不通过"
+    return f"你尝试进行[{skill_name}]({diff_map.get(difficulty, '普通')})判定，骰点结果为{roll_result}，{outcome}。"
