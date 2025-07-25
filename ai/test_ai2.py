@@ -41,6 +41,7 @@ def match_event(user_input):
         ],
         temperature=0.6,
     )
+
     
     # 获取 AI 返回的匹配事件
     matched_event = completion.choices[0].message.content.strip()
