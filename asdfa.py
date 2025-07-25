@@ -12,6 +12,7 @@ def core_python_processing(user_text: str) -> str:
     print(f"后端即将返回: '{result}'")
     return result
 
+
 app = FastAPI()
 
 # 3. 【至关重要】配置“跨域许可” (CORS)
@@ -56,4 +57,3 @@ def process_text_endpoint(request_data: dict):
 @app.get("/")
 def root_endpoint():
     return {"message": "你好！Python API正在运行中。"}
-
