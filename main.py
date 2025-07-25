@@ -1,15 +1,49 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+USER_INPUT = 'HI'
+import ai.test_ai as ai_process
+import json
+import math
+import random
 def core_python_processing(user_text: str) -> str:
     """
     这里面放你所有的复杂Python代码。
     它可以是数据分析、机器学习模型调用、复杂的计算等等。
     为了演示，我们只做一个简单的文本反转。
     """
-    print(f"后端收到了文本: '{user_text}'")
-    result = f"Python后端处理完成！这是反转后的文本： {user_text[::-1]}"
-    print(f"后端即将返回: '{result}'")
+    # 读取技能数据
+    json_filename = 'skills.json'
+    with open(json_filename, 'r', encoding='utf-8') as f:
+        skills_list = json.load(f)
+
+    # 获取用户输入
+    user_input =user_text
+
+    # 用AI分析用户输入，获得判定需求、技能、难度
+    need_judge, skill_name, difficulty = ai_process.analyze_action(user_input)
+
+    if need_judge:
+        # 获取技能成功率
+        success_rate = ai_process.get_skill_success_rate(skill_name, skills_list)
+        # 投骰
+        roll_result = random.randint(1, 100)
+        print(f"你投出了：{roll_result}")
+        # 判定
+        success = ai_process.judge(roll_result, success_rate, difficulty)
+        # 生成判定描述
+        judge_desc = ai_process.describe_action(user_input, skill_name, difficulty, roll_result, success)
+        print(judge_desc)
+        # 生成世界观下的AI描述
+        world_desc = ai_process.generate_description(user_input, judge_desc)
+    else:
+        print("无需判定。")
+        # 直接生成世界观下的AI描述
+        world_desc = ai_process.generate_description(user_input)
+
+    result = world_desc
+    print(f"后端收到了文本: '{user_input}'")
+    print(f"后端即将返回result'")
+    print(result)
     return result
 
 
