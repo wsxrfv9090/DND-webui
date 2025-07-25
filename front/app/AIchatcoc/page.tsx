@@ -46,7 +46,7 @@ const styles = {
 
 // 羽毛 SVG 图标
 const featherSvg = (
-    <svg style={styles.feather} viewBox="0 0 32 32" fill="none"><path d="M4 28C4 28 28 4 28 4M4 28C4 28 12 24 16 20M4 28C4 28 8 20 20 8" stroke="#bfa76f" strokeWidth="2.5" strokeLinecap="round"/></svg>
+    <svg style={styles.feather} viewBox="0 0 32 32" fill="none"><path d="M4 28C4 28 28 4 28 4M4 28C4 28 12 24 16 20M4 28C4 28 8 20 20 8" stroke="#bfa76f" strokeWidth="2.5" strokeLinecap="round" /></svg>
 );
 
 // 消息类型定义
