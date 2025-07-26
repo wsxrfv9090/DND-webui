@@ -17,13 +17,13 @@ export default function Home() {
   const [showStory, setShowStory] = useState(false);
   const [displayedText, setDisplayedText] = useState('');
   const storyLines = [
-    '【主线故事】',
-    '在遥远的未来，人类文明已经发展到了星际时代。',
-    '你，一位年轻的探险家，意外发现了一个被遗忘的星球...',
-    '随着飞船降落在星球表面，你发现了一座巨大的古老遗迹。',
-    '墙壁上刻满了未知的文字，似乎隐藏着重要的秘密...',
-    '在遗迹的最深处，你发现了一个惊人的真相...',
-    '这个发现将永远改变人类对宇宙的认知。'
+    '-雨声是时间的低语，在玻璃上蜿蜒爬行',
+    '-那些被墨水囚禁的传说——乌鸦衔着不可名状的秘密，沉入永不燃烧的湖底',
+    '-此刻正从羊皮纸的囚笼中渗出，在煤气灯的光晕里扭曲成形。',
+    '-直到敲门声撕裂现实的薄纱：',
+    '-三重叩击，像命运之钟咬合了最后一个齿槽',
+
+   
   ];
   const [currentLine, setCurrentLine] = useState(0);
   const [currentText, setCurrentText] = useState('');
@@ -140,20 +140,54 @@ export default function Home() {
     };
   }, [fullMainTitle, fullSubTitle]);
 
+  const navigateTo = (path: string) => {
+    router.push(path);
+  };
+
   return (
     <>
       <div className="page-container">
         <header className="page-header">
-          <div className="logo">
-            <span className="logo-icon">N</span>
-            <span>AllStory</span>
+          <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div 
+              aria-label="AllStory Logo"
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                border: '2px solid rgba(172, 94, 75, 0.8)',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                backgroundImage: 'url(/avatar.png)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                flexShrink: 0
+              }}
+            />
+            <span style={{ 
+              fontFamily: '"Permanent Marker", cursive',
+              fontSize: '28px',
+              fontWeight: '700',
+              color: '#e0d8c8',
+              textShadow: '0 1px 3px rgba(0,0,0,0.5)'
+            }}>AllStory</span>
           </div>
-          <nav className="navigation">
-            {['游戏世界', '手册', '团队', '社区'].map((item) => (
-              <button key={item} className="nav-button">
-                {item}
-              </button>
-            ))}
+          <nav className="nav-links" style={{ display: 'flex', gap: '20px' }}>
+            <button key="home" className="nav-button" onClick={() => navigateTo('/')}>
+              首页
+            </button>
+            <button key="gameworld" className="nav-button" onClick={() => navigateTo('/gameworld')}>
+              游戏世界
+            </button>
+            <button key="manual" className="nav-button" onClick={() => navigateTo('/gameinformation')}>
+              游戏手册
+            </button>
+            <button key="aigame" className="nav-button" onClick={() => navigateTo('/AIchatcoc')}>
+              AI 游戏
+            </button>
+            <button key="社区" className="nav-button">
+              社区
+            </button>
           </nav>
         </header>
 

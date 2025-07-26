@@ -2,6 +2,9 @@
 // 引入 React 相关钩子
 import '../page_fonts.css';
 import React, { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import 'github-markdown-css/github-markdown.css'; 
 
 // 白板便利贴风格的样式对象
 const styles = {
@@ -74,11 +77,16 @@ const styles = {
     },
     // AI 消息卡片样式 - 黄色便利贴
     aiMsg: {
-        background: '#fff8c4',
-        border: '1px solid #e0d8a0',
+        background: '#f9f5e9',
+        border: '1px solid #e0d5b8',
+        margin: '15px 0',
         alignSelf: 'flex-start',
         marginRight: 'auto',
-        marginLeft: '10px',
+        marginLeft: '20px',
+        fontSize: '20px', 
+        '&:hover': {
+            transform: 'rotate(-1deg)',
+        },
         '&::after': {
             content: '""',
             position: 'absolute',
@@ -90,11 +98,16 @@ const styles = {
     },
     // 玩家消息卡片样式 - 蓝色便利贴
     playerMsg: {
-        background: '#e1f5fe',
-        border: '1px solid #b3e5fc',
+        background: '#e3f2fd',
+        border: '1px solid #bbdefb',
+        margin: '15px 0',
         alignSelf: 'flex-end',
         marginLeft: 'auto',
-        marginRight: '10px',
+        marginRight: '20px',
+        fontSize: '20px', 
+        '&:hover': {
+            transform: 'rotate(1deg)',
+        },
         '&::after': {
             content: '""',
             position: 'absolute',
@@ -348,15 +361,15 @@ const Page = () => {
                         
                         return (
                             <div 
-                                key={idx}
+                                key={idx} 
+                                className="message-card"
                                 style={{
                                     ...styles.messageCard,
                                     ...(msg.role === 'ai' ? styles.aiMsg : styles.playerMsg),
-                                    transform: `rotate(${style.rotation}deg) translateY(${style.offset}px)`,
-                                    cursor: 'pointer',
+                                    transform: `rotate(${messageStyles[idx]?.rotation || 0}deg) translate(${messageStyles[idx]?.offset || 0}px)`,
+                                    transition: 'all 0.3s ease',
                                 }}
                                 onClick={() => {
-                                    // 点击时重新随机旋转
                                     const newStyles = [...messageStyles];
                                     newStyles[idx] = {
                                         rotation: getRandomRotation(),
@@ -373,14 +386,21 @@ const Page = () => {
                                     transform: 'translateX(-50%)',
                                 }} />
                                 
-                                {/* 消息内容 */}
-                                <div style={{
-                                    padding: '10px',
-                                    fontSize: '14px',
-                                    lineHeight: '1.5',
+                                {/* 消息内容 - 使用Markdown渲染 */}
+                                <div className="markdown-body" style={{
+                                    padding: '15px',
+                                    fontSize: '20px',
+                                    lineHeight: '1.9',
                                     color: '#333',
+                                    backgroundColor: 'transparent',
                                 }}>
-                                    {formattedText}
+                                    {msg.role === 'ai' ? (
+                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                            {msg.text}
+                                        </ReactMarkdown>
+                                    ) : (
+                                        formattedText
+                                    )}
                                 </div>
                                 
                                 {/* 发送者标签 */}
@@ -497,6 +517,74 @@ const Page = () => {
                     opacity: 1;
                     transform: scale(1);
                     transition: opacity 300ms, transform 300ms;
+                }
+            `}</style>
+            
+            {/* 全局Markdown样式 */}
+            <style jsx global>{`
+                .message-card .markdown-body {
+                    font-family: inherit;
+                    font-size: inherit;
+                    line-height: 1.7;
+                    padding: 0;
+                    background-color: transparent;
+                }
+                .message-card .markdown-body pre {
+                    background-color: rgba(0,0,0,0.05);
+                    padding: 12px;
+                    border-radius: 6px;
+                    overflow-x: auto;
+                }
+                .message-card .markdown-body code {
+                    font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+                    padding: 0.2em 0.4em;
+                    margin: 0;
+                    font-size: 85%;
+                    background-color: rgba(27,31,35,0.05);
+                    border-radius: 3px;
+                }
+                .message-card .markdown-body pre code {
+                    background-color: transparent;
+                    padding: 0;
+                    margin: 0;
+                    font-size: 100%;
+                    word-break: normal;
+                    white-space: pre;
+                    overflow: visible;
+                }
+                .message-card .markdown-body a {
+                    color: #0366d6;
+                    text-decoration: none;
+                }
+                .message-card .markdown-body a:hover {
+                    text-decoration: underline;
+                }
+                .message-card .markdown-body blockquote {
+                    border-left: 4px solid #dfe2e5;
+                    color: #6a737d;
+                    padding: 0 1em;
+                    margin: 0.5em 0;
+                }
+                .message-card .markdown-body blockquote p {
+                    margin: 0.5em 0;
+                }
+                .message-card .markdown-body table {
+                    border-collapse: collapse;
+                    width: 100%;
+                    margin: 16px 0;
+                }
+                .message-card .markdown-body th,
+                .message-card .markdown-body td {
+                    border: 1px solid #dfe2e5;
+                    padding: 6px 13px;
+                    text-align: left;
+                }
+                .message-card .markdown-body tr {
+                    background-color: #fff;
+                    border-top: 1px solid #c6cbd1;
+                }
+                .message-card .markdown-body tr:nth-child(2n) {
+                    background-color: #f6f8fa;
                 }
             `}</style>
         </div>

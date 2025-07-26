@@ -16,8 +16,11 @@ const geistMono = Geist_Mono({
 
 // 全局元数据设置
 export const metadata = {
-  title: "DND-webui",
-  description: "DND-webui",
+  title: "AllStory",
+  description: "AllStory",
+  icons: {
+    icon: '/avatar.png', // 使用 avatar.png 作为网站图标
+  },
 };
 
 // 根布局组件，包裹所有页面内容
