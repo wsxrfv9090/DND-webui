@@ -3,109 +3,199 @@
 import '../page_fonts.css';
 import React, { useState, useRef, useEffect } from 'react';
 
-// 魔幻羊皮纸风格的简单内联样式对象
+// 白板便利贴风格的样式对象
 const styles = {
-    // 页面主容器样式
+    // 页面主容器样式 - 模拟墙面
     container: {
-        display: 'flex', flexDirection: 'column' as const, alignItems: 'center', justifyContent: 'center', minHeight: '100vh', 
-        backgroundColor: '#1a2a2a',
-        backgroundImage: `linear-gradient(rgba(26, 155, 155, 0.9), rgba(27, 105, 183, 0.9)), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Crect x='0' y='0' width='100' height='100'/%3E%3C/g%3E%3C/svg%3E")`, 
-        fontFamily: 'serif',
-        background: 'linear-gradient(135deg, #1a2a3a 0%, #2a3a4a 100%)',
-        border: '4px solid #2a4a5a', borderRadius: 24, 
-        boxShadow: '0 4px 24px #0008, inset 0 1px 2px #4a6a7a', 
-        padding: 24, marginBottom: 16,
+        display: 'flex', 
+        flexDirection: 'column' as const, 
+        alignItems: 'center', 
+        justifyContent: 'flex-start', 
+        minHeight: '100vh',
+        padding: '24px',
+        backgroundColor: '#f0f0e8',
+        backgroundImage: 'linear-gradient(#e5e5e5 1px, transparent 1px), linear-gradient(90deg, #e5e5e5 1px, transparent 1px)',
+        backgroundSize: '40px 40px',
+        fontFamily: '"Marker Felt", "Comic Sans MS", cursive, sans-serif',
+        position: 'relative',
+        overflow: 'hidden',
     },
-    // 聊天框样式
+    // 白板容器
     chatBox: {
-        width: '100%', maxWidth: 600, minHeight: 500, 
-        background: 'linear-gradient(135deg,rgb(222, 221, 199) 0%,rgb(222, 221, 199) 100%)',
-        border: '4px solid #2a4a5a', borderRadius: 24, 
-        boxShadow: '0 4px 24px #0008, inset 0 1px 2px #4a6a7a', 
-        padding: 24, marginBottom: 16,
-        display: 'flex', flexDirection: 'column' as const, justifyContent: 'flex-end',
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: '#f5f5f5',
+        borderRadius: '12px',
+        boxShadow: 'inset 0 0 10px rgba(0,0,0,0.1)',
+        overflow: 'hidden',
+        maxWidth: '1200px',
+        margin: '0 auto',
+        width: '100%',
     },
-    // 消息列表区域样式
+    // 消息列表区域样式 - 垂直交替布局
     messages: {
-        flex: 1, overflowY: 'auto' as const, marginBottom: 16,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '20px',
+        padding: '20px',
+        overflowY: 'auto',
+        flex: 1,
+        maxWidth: '800px',
+        margin: '0 auto',
+        width: '100%',
     },
-    // AI 消息气泡样式
+    // 消息卡片基础样式
+    messageCard: {
+        padding: '24px',
+        borderRadius: '12px',
+        boxShadow: '3px 3px 8px rgba(0, 0, 0, 0.15)',
+        position: 'relative',
+        minHeight: '120px',
+        maxWidth: '80%',
+        width: 'fit-content',
+        wordBreak: 'break-word',
+        transition: 'all 0.3s ease',
+        cursor: 'pointer',
+        '&:hover': {
+            transform: 'translateY(-3px) rotate(-1deg)',
+            boxShadow: '5px 5px 12px rgba(0, 0, 0, 0.2)'
+        },
+        '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: '10px',
+            right: '10px',
+            width: '12px',
+            height: '12px',
+            borderRadius: '50%',
+            backgroundColor: 'rgba(0,0,0,0.1)',
+        }
+    },
+    // AI 消息卡片样式 - 黄色便利贴
     aiMsg: {
-        alignSelf: 'flex-start', 
-        background: 'linear-gradient(135deg, #1a2a3a 0%, #2a3a4a 100%)', 
-        color: '#8ba3b3', 
-        borderRadius: '18px 18px 18px 6px', 
-        padding: '12px 18px', 
-        margin: '8px 0', 
-        fontFamily: 'serif', 
-        boxShadow: '0 2px 8px #0004, inset 0 1px 2px #4a6a7a', 
-        border: '2px solid #2a4a5a',
-        textShadow: '0 0 4px #4a6a7a',
+        background: '#fff8c4',
+        border: '1px solid #e0d8a0',
+        alignSelf: 'flex-start',
+        marginRight: 'auto',
+        marginLeft: '10px',
+        '&::after': {
+            content: '""',
+            position: 'absolute',
+            bottom: '10px',
+            right: '10px',
+            fontSize: '12px',
+            color: '#999',
+        }
     },
-    // 玩家消息气泡样式
+    // 玩家消息卡片样式 - 蓝色便利贴
     playerMsg: {
-        alignSelf: 'flex-end', 
-        background: 'linear-gradient(135deg, #2a3a4a 0%, #3a4a5a 100%)', 
-        color: '#9ba3b3', 
-        borderRadius: '18px 18px 6px 18px', 
-        padding: '12px 18px', 
-        margin: '8px 0', 
-        fontFamily: 'serif', 
-        boxShadow: '0 2px 8px #0004, inset 0 1px 2px #5a7a8a', 
-        border: '2px solid #3a5a6a',
-        textShadow: '0 0 4px #5a7a8a',
+        background: '#e1f5fe',
+        border: '1px solid #b3e5fc',
+        alignSelf: 'flex-end',
+        marginLeft: 'auto',
+        marginRight: '10px',
+        '&::after': {
+            content: '""',
+            position: 'absolute',
+            bottom: '10px',
+            right: '10px',
+            fontSize: '12px',
+            color: '#999',
+        }
     },
-    // 输入区域样式
+    // 输入区域容器
     inputArea: {
-        display: 'flex', alignItems: 'center', 
-        background: 'linear-gradient(135deg, #1a2a3a 0%, #2a3a4a 100%)', 
-        borderRadius: 16, 
-        border: '2px solid #2a4a5a', 
-        padding: '8px 12px',
-        boxShadow: '0 2px 8px #0004, inset 0 1px 2px #4a6a7a',
+        display: 'flex',
+        alignItems: 'center',
+        background: 'white',
+        borderRadius: '8px',
+        border: '1px solid #d0c8b0',
+        padding: '10px 15px',
+        boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.1)',
+        marginTop: 'auto',
     },
     // 输入框样式
     input: {
-        flex: 1, border: 'none', outline: 'none', 
-        background: 'linear-gradient(135deg, #2a3a4a 0%, #3a4a5a 100%)', 
-        fontSize: 18, fontFamily: 'serif', padding: '8px', 
-        color: '#8ba3b3',
-        borderRadius: 8,
-        boxShadow: 'inset 0 1px 2px #4a6a7a',
-        textShadow: '0 0 2px #4a6a7a',
+        flex: 1,
+        border: 'none',
+        outline: 'none',
+        background: 'transparent',
+        fontSize: '16px',
+        fontFamily: '"Marker Felt", "Comic Sans MS", cursive, sans-serif',
+        padding: '10px',
+        color: '#333',
+        '&::placeholder': {
+            color: '#999',
+            fontStyle: 'italic',
+        }
     },
     // 发送按钮样式
     sendBtn: {
-        marginLeft: 12, 
-        background: 'linear-gradient(135deg, #2a4a5a 0%, #3a5a6a 100%)', 
-        color: '#8ba3b3', 
-        border: '3px solid #2a4a5a', 
-        borderRadius: 12, 
-        padding: '8px 18px', 
-        fontSize: 18, 
-        fontFamily: 'serif', 
-        cursor: 'pointer', 
-        boxShadow: '0 2px 8px #0004, inset 0 1px 2px #4a6a7a', 
-        transition: 'box-shadow 0.2s, border 0.2s, transform 0.2s',
-        textShadow: '0 0 4px #4a6a7a',
+        marginLeft: '10px',
+        background: '#4a90e2',
+        color: 'white',
+        border: 'none',
+        borderRadius: '20px',
+        padding: '8px 20px',
+        fontSize: '16px',
+        fontFamily: '"Marker Felt", "Comic Sans MS", cursive, sans-serif',
+        cursor: 'pointer',
+        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+        transition: 'all 0.2s',
+        '&:hover': {
+            background: '#357abd',
+            transform: 'translateY(-1px)',
+        },
+        '&:active': {
+            transform: 'translateY(0)',
+        }
     },
-    // 羽毛图标样式
-    feather: {
-        width: 28, height: 28, marginRight: 8,
-        filter: 'brightness(0.7) contrast(1.2) hue-rotate(180deg)',
+    // 装饰元素 - 图钉
+    pin: {
+        position: 'absolute',
+        width: '10px',
+        height: '10px',
+        borderRadius: '50%',
+        backgroundColor: '#c0c0c0',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+        '&::after': {
+            content: '""',
+            position: 'absolute',
+            top: '-5px',
+            left: '2px',
+            width: '6px',
+            height: '10px',
+            backgroundColor: '#e0e0e0',
+            borderRadius: '50% 50% 0 0',
+        }
+    },
+    // 标题样式
+    title: {
+        fontSize: '24px',
+        fontWeight: 'bold',
+        color: '#333',
+        marginBottom: '20px',
+        textAlign: 'center',
+        fontFamily: '"Permanent Marker", cursive',
+        textShadow: '1px 1px 2px rgba(0,0,0,0.1)',
     }
 };
-
-// 羽毛 SVG 图标
-const featherSvg = (
-    <svg style={styles.feather} viewBox="0 0 32 32" fill="none"><path d="M4 28C4 28 28 4 28 4M4 28C4 28 12 24 16 20M4 28C4 28 8 20 20 8" stroke="#bfa76f" strokeWidth="2.5" strokeLinecap="round" /></svg>
-);
 
 // 消息类型定义
 type Message = { role: 'ai' | 'player'; text: string };
 // 初始消息，AI 欢迎语
 const initialMessages: Message[] = [
-    { role: 'ai', text: '站在斯夸特湖汽车旅店的门前，正在寻找失踪的詹姆斯·弗雷泽的调查员，你，深深地感到在这座看似平静的旅店背后，隐藏着比死亡更可怕的秘密...' },
+    { 
+        role: 'ai', 
+        text: '1924年，马萨诸塞州，阿卡姆市。\n\n' +
+              '窗外，连绵的秋雨不知疲倦地敲打着玻璃，将街道的煤气灯光晕染成一片模糊的昏黄。你正身处自己位于“德尔伍德古物研究会”三楼的办公室里。空气中弥漫着旧书、皮革与淡淡烟草混合的熟悉气味，唯一的声响来自角落里那座老式落地钟沉稳而规律的滴答声。\n\n' +
+              '你的桌上摊着几份关于新英格兰地区乡野传说的手稿，其中一篇关于“蹲占者之湖”（Squatter Lake）的记述尤其让你在意——文中提到了怪异的乌鸦群和某些无法被点燃的木材。你正沉浸在这些尘封的记述中，试图将零散的线索拼凑成一个完整的图案。\n\n' +
+              '就在这时——\n\n' +
+              '笃，笃，笃。\n\n' +
+              '三声清晰而有力的敲门声，穿透了雨声和钟摆声，打破了书房的宁静。这声音听起来既不匆忙，也不犹豫，带着一种不容拒绝的决断。\n\n' +
+              '你的思绪被打断了。你会怎么做？' 
+    },
 ];
 
 // 等待特效组件：魔幻风格圆点跳动
@@ -137,6 +227,12 @@ const MagicTyping = () => (
 );
 
 // 主页面组件
+// 生成随机旋转角度
+const getRandomRotation = () => (Math.random() * 6 - 3);
+
+// 生成随机位置偏移
+const getRandomOffset = () => (Math.random() * 20 - 10);
+
 const Page = () => {
     // 消息列表状态
     const [messages, setMessages] = useState<Message[]>(initialMessages);
@@ -145,6 +241,16 @@ const Page = () => {
     // 用于滚动到底部的引用
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const [loading, setLoading] = useState(false);
+    // 存储每个消息的随机旋转角度和偏移
+    const [messageStyles, setMessageStyles] = useState<Array<{rotation: number, offset: number}>>([]);
+
+    // 初始化消息样式
+    useEffect(() => {
+        setMessageStyles(messages.map(() => ({
+            rotation: getRandomRotation(),
+            offset: getRandomOffset()
+        })));
+    }, [messages.length]);
 
     // 每当消息更新时自动滚动到底部
     useEffect(() => {
@@ -204,15 +310,29 @@ const Page = () => {
                 textShadow: '0 0 16px #4a6a7a, 0 2px 8px #000',
                 background: 'linear-gradient(135deg, #1a2a3a 0%, #2a3a4a 100%)',
                 borderRadius: 12,
-                padding: '8px 24px',
-                border: '2px solid #2a4a5a',
-                boxShadow: '0 4px 16px #0004, inset 0 1px 2px #4a6a7a',
+                padding: '10px 20px',
+                textAlign: 'center'
             }}>
-                Game Agent
+                AllStory
             </div>
-            {/* 聊天框 */}
+            
+            {/* 白板容器 */}
             <div style={styles.chatBox}>
-                {/* 消息列表 */}
+                <h2 style={styles.title}>
+                    调查白板
+                    <span style={{
+                        display: 'inline-block',
+                        marginLeft: '10px',
+                        fontSize: '14px',
+                        fontWeight: 'normal',
+                        color: '#666',
+                        fontFamily: 'Comic Sans MS',
+                    }}>
+                        
+                    </span>
+                </h2>
+                
+                {/* 消息列表 - 网格布局 */}
                 <div style={styles.messages}>
                     {messages.map((msg, idx) => {
                         // 将文本中的换行符转换为React元素
@@ -223,63 +343,162 @@ const Page = () => {
                             </React.Fragment>
                         ));
                         
+                        // 获取当前消息的随机样式
+                        const style = messageStyles[idx] || { rotation: 0, offset: 0 };
+                        
                         return (
                             <div 
-                                key={idx} 
-                                style={msg.role === 'ai' ? styles.aiMsg : styles.playerMsg}
+                                key={idx}
+                                style={{
+                                    ...styles.messageCard,
+                                    ...(msg.role === 'ai' ? styles.aiMsg : styles.playerMsg),
+                                    transform: `rotate(${style.rotation}deg) translateY(${style.offset}px)`,
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => {
+                                    // 点击时重新随机旋转
+                                    const newStyles = [...messageStyles];
+                                    newStyles[idx] = {
+                                        rotation: getRandomRotation(),
+                                        offset: getRandomOffset()
+                                    };
+                                    setMessageStyles(newStyles);
+                                }}
                             >
-                                {formattedText}
+                                {/* 图钉装饰 */}
+                                <div style={{
+                                    ...styles.pin,
+                                    top: '5px',
+                                    left: '50%',
+                                    transform: 'translateX(-50%)',
+                                }} />
+                                
+                                {/* 消息内容 */}
+                                <div style={{
+                                    padding: '10px',
+                                    fontSize: '14px',
+                                    lineHeight: '1.5',
+                                    color: '#333',
+                                }}>
+                                    {formattedText}
+                                </div>
+                                
+                                {/* 发送者标签 */}
+                                <div style={{
+                                    position: 'absolute',
+                                    bottom: '5px',
+                                    right: '10px',
+                                    fontSize: '10px',
+                                    color: '#999',
+                                    fontStyle: 'italic',
+                                }}>
+                                    {msg.role === 'ai' ? 'AI' : '你'}
+                                </div>
                             </div>
                         );
                     })}
+                    
                     {/* 等待特效 */}
                     {loading && (
-                        <div style={{ display: 'flex', alignItems: 'center', minHeight: 32, margin: '8px 0 0 0' }}>
+                        <div style={{
+                            ...styles.messageCard,
+                            ...styles.aiMsg,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            minHeight: '80px',
+                        }}>
                             <MagicTyping />
                         </div>
                     )}
+                    
                     {/* 滚动锚点 */}
                     <div ref={messagesEndRef} />
                 </div>
+                
                 {/* 输入区域 */}
                 <div style={styles.inputArea}>
-                    {featherSvg}
                     <input
-                        style={styles.input}
                         type="text"
-                        placeholder="在此输入你的行动..."
                         value={input}
-                        onChange={e => setInput(e.target.value)}
-                        onKeyDown={handleKeyDown}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                        placeholder="写下你的线索或问题..."
+                        style={styles.input}
                     />
-                    <button
-                        style={styles.sendBtn}
-                        onClick={handleSend}
+                    <button 
+                        onClick={handleSend} 
+                        style={{
+                            ...styles.sendBtn,
+                            opacity: loading ? 0.7 : 1,
+                            cursor: loading ? 'not-allowed' : 'pointer',
+                        }}
+                        disabled={loading}
                         onMouseDown={e => {
-                            e.currentTarget.style.transform = 'translateY(2px) scale(0.97)';
-                            e.currentTarget.style.border = '3px solid #4a6a7a';
-                            e.currentTarget.style.boxShadow = '0 1px 4px #0004, inset 0 1px 2px #6a8a9a';
+                            if (!loading) {
+                                e.currentTarget.style.transform = 'translateY(2px)';
+                                e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+                            }
                         }}
                         onMouseUp={e => {
-                            e.currentTarget.style.transform = 'translateY(-3px) scale(1.03)';
-                            e.currentTarget.style.border = '3px solid #4a6a7a';
-                            e.currentTarget.style.boxShadow = '0 4px 16px #0006, inset 0 1px 2px #6a8a9a, 0 0 8px #4a6a7a';
+                            if (!loading) {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
+                            }
                         }}
                         onMouseLeave={e => {
-                            e.currentTarget.style.transform = 'none';
-                            e.currentTarget.style.border = '3px solid #2a4a5a';
-                            e.currentTarget.style.boxShadow = '0 2px 8px #0004, inset 0 1px 2px #4a6a7a';
-                        }}
-                        onMouseOver={e => {
-                            e.currentTarget.style.transform = 'translateY(-3px) scale(1.03)';
-                            e.currentTarget.style.border = '3px solid #4a6a7a';
-                            e.currentTarget.style.boxShadow = '0 4px 16px #0006, inset 0 1px 2px #6a8a9a, 0 0 8px #4a6a7a';
+                            if (!loading) {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
+                            }
                         }}
                     >
                         发送
                     </button>
                 </div>
             </div>
+            
+            {/* 全局字体和样式 */}
+            <style jsx global>{`
+                @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Indie+Flower&family=Permanent+Marker&display=swap');
+                
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                
+                /* 自定义滚动条 */
+                ::-webkit-scrollbar {
+                    width: 8px;
+                    height: 8px;
+                }
+                
+                ::-webkit-scrollbar-track {
+                    background: rgba(0, 0, 0, 0.05);
+                    border-radius: 4px;
+                }
+                
+                ::-webkit-scrollbar-thumb {
+                    background: rgba(0, 0, 0, 0.2);
+                    border-radius: 4px;
+                }
+                
+                ::-webkit-scrollbar-thumb:hover {
+                    background: rgba(0, 0, 0, 0.3);
+                }
+                
+                /* 消息卡片动画 */
+                .message-enter {
+                    opacity: 0;
+                    transform: scale(0.9);
+                }
+                
+                .message-enter-active {
+                    opacity: 1;
+                    transform: scale(1);
+                    transition: opacity 300ms, transform 300ms;
+                }
+            `}</style>
         </div>
     );
 };
