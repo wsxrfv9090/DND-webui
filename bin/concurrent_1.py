@@ -43,7 +43,7 @@ async def concurrent_1(
         is_success = util.perform_check_coc(roll_result, success_rate, difficulty)
         
         # 生成格式化的检定结果描述
-        judge_desc = util.format_check_result_string(skill_name, difficulty, roll_result, is_success)
+        judge_desc = util.format_check_result_string(skill_name, difficulty, roll_result, is_success, success_rate)
         result_desc = judge_desc # 将检定结果作为叙述的一部分
         print(judge_desc)
     else:
@@ -62,7 +62,10 @@ async def concurrent_1(
     )
     
     # 组合最终结果
-    final_result = ai_response
+    if result_desc:
+        final_result = result_desc + "\n" + ai_response
+    else:
+        final_result = ai_response
     
     print(f"后端收到了文本: '{user_input}'")
     print(f"后端即将返回: {final_result}")
