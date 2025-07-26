@@ -3,6 +3,7 @@ from bin import utility as util
 import random
 from bin import apis
 import os
+from typing import Tuple, Optional
 
 
 async def concurrent_1(
@@ -63,11 +64,12 @@ async def concurrent_1(
     print(f"后端收到了文本: '{user_input}'")
     print(f"后端即将返回: {final_result}")
     print(f"正在存储至{util.QUEUE_MEMORY_PATH}")
-    save_one_io_into_queue(user_input, final_result, util.QUEUE_MEMORY_PATH)
+    poped = save_one_io_into_queue(user_input, final_result, util.QUEUE_MEMORY_PATH)
+    print(poped)
     return final_result
 
 
-def save_one_io_into_queue(input_text: str, output_text: str, filename: str, max_turns: int = 5):
+def save_one_io_into_queue(input_text: str, output_text: str, filename: str, max_turns: int = 5) -> Tuple[Optional[str], Tuple[str, ...]]:
     """
     将一次用户输入和AI输出（可以是多行）保存到文本文件中，并维持一个固定大小的对话队列。
     
@@ -109,8 +111,9 @@ def save_one_io_into_queue(input_text: str, output_text: str, filename: str, max
     new_turn_string = f"{player_prefix}\n{input_text}\n{ai_prefix}\n{output_text}"
     all_turns.append(new_turn_string)
     
+    
     # 4. 检查对话轮数，如果超过限制，则删除最老的记录
-    if len(all_turns) > max_turns:
+    if len(all_turns) > max_turns: 
         # 列表切片依然是实现此功能的最佳方式
         all_turns = all_turns[-max_turns:]
         
@@ -119,4 +122,5 @@ def save_one_io_into_queue(input_text: str, output_text: str, filename: str, max
         # 使用分隔符将所有轮次连接成一个字符串
         output_content = TURN_SEPARATOR.join(all_turns)
         f.write(output_content)
-
+        
+    return tuple(all_turns)
