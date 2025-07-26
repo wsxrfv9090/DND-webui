@@ -9,9 +9,7 @@ import Memory
 import uuid
 from datetime import datetime
 
-# 全局变量：会话ID和交互历史
-session_id = str(uuid.uuid4())[:8]  # 生成8位会话ID
-interaction_history = []
+
 
 def core_python_processing(user_text: str) -> str:
     """
