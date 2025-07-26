@@ -29,6 +29,7 @@ export default function Home() {
   const [currentText, setCurrentText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isFadingOut, setIsFadingOut] = useState(false);
+  const [displayedLines, setDisplayedLines] = useState<string[]>([]);
   const [showClickHint, setShowClickHint] = useState(false);
 
   const fullMainTitle = 'Welcome to AllStorys';
@@ -41,9 +42,8 @@ export default function Home() {
       setIsTyping(true);
       setShowClickHint(false);
       const line = storyLines[currentLine];
-      let i = 0;
       setCurrentText(''); // 清空当前文本
-      
+      let i = 0;
       const typingInterval = setInterval(() => {
         if (i < line.length) {
           setCurrentText(prev => prev + line.charAt(i));
@@ -81,7 +81,6 @@ export default function Home() {
     
     // 继续下一行
     setCurrentLine(prev => prev + 1);
-    setShowClickHint(false);
   };
 
   const handleStartClick = () => {
@@ -94,33 +93,52 @@ export default function Home() {
   const fullSubTitle = '... Made by us ...';
 
   useEffect(() => {
-    let i = 0;
-    const typingInterval = setInterval(() => {
-      if (i < fullMainTitle.length) {
-        setMainTitle(prev => prev + fullMainTitle.charAt(i));
-        i++;
+    // Use ref to track the current character index
+    const mainIndex = { current: 0 };
+    const subIndex = { current: 0 };
+    let mainInterval: NodeJS.Timeout;
+    let subInterval: NodeJS.Timeout;
+
+    // Function to type main title
+    const typeMainTitle = () => {
+      if (mainIndex.current < fullMainTitle.length) {
+        setMainTitle(fullMainTitle.substring(0, mainIndex.current + 1));
+        mainIndex.current++;
       } else {
-        clearInterval(typingInterval);
+        clearInterval(mainInterval);
         setShowCursorMain(false);
         setShowCursorSub(true);
-        // Start subtitle typing
-        let j = 0;
-        const subTypingInterval = setInterval(() => {
-          if (j < fullSubTitle.length) {
-            setSubTitle(prev => prev + fullSubTitle.charAt(j));
-            j++;
-          } else {
-            clearInterval(subTypingInterval);
-            setShowCursorSub(false);
-          }
-        }, 120);
+        // Start typing subtitle after main title is done
+        typeSubtitle();
       }
-    }, 150);
-
-    return () => {
-      clearInterval(typingInterval);
     };
-  }, []);
+
+    // Function to type subtitle
+    const typeSubtitle = () => {
+      if (subIndex.current < fullSubTitle.length) {
+        setSubTitle(fullSubTitle.substring(0, subIndex.current + 1));
+        subIndex.current++;
+      } else {
+        clearInterval(subInterval);
+        setShowCursorSub(false);
+      }
+    };
+
+    // Start typing main title
+    mainInterval = setInterval(typeMainTitle, 150);
+    
+    // Start typing subtitle after a delay
+    const subTimeout = setTimeout(() => {
+      subInterval = setInterval(typeSubtitle, 120);
+    }, fullMainTitle.length * 150 + 200); // Wait for main title to finish + small delay
+
+    // Cleanup
+    return () => {
+      clearInterval(mainInterval);
+      clearInterval(subInterval);
+      clearTimeout(subTimeout);
+    };
+  }, [fullMainTitle, fullSubTitle]);
 
   return (
     <>
@@ -128,10 +146,10 @@ export default function Home() {
         <header className="page-header">
           <div className="logo">
             <span className="logo-icon">N</span>
-            <span>Game Agent</span>
+            <span>AllStory</span>
           </div>
           <nav className="navigation">
-            {['游戏世界', '职业手册', '团队', '社区'].map((item) => (
+            {['游戏世界', '手册', '团队', '社区'].map((item) => (
               <button key={item} className="nav-button">
                 {item}
               </button>
@@ -140,11 +158,11 @@ export default function Home() {
         </header>
 
         <main className="main-content">
-          <h1 className="main-title">
+          <h1 className="main-title" style={{ userSelect: 'none' }}>
             {mainTitle}
             {showCursorMain && <span className="cursor">|</span>}
           </h1>
-          <div className="subtitle">
+          <div className="subtitle" style={{ userSelect: 'none' }}>
             {subTitle}
             {showCursorSub && <span className="cursor">|</span>}
           </div>
@@ -162,15 +180,13 @@ export default function Home() {
               style={{ cursor: 'pointer' }}
             >
               <div className="story-content">
-                {currentLine < storyLines.length && (
-                  <p>
-                    {currentText}
-                    <span className={`cursor ${isTyping ? 'blinking' : ''}`}>|</span>
-                  </p>
-                )}
+                <p style={{ userSelect: 'none' }}>
+                  {currentText}
+                  <span className={`cursor ${isTyping ? 'blinking' : ''}`}>|</span>
+                </p>
                 {showClickHint && (
-                  <p className="click-hint">
-                    {currentLine < storyLines.length - 1 ? '继续探寻...' : '点击开始探寻...'}
+                  <p className="click-hint" style={{ userSelect: 'none' }}>
+                    {currentLine < storyLines.length - 1 ? '点击继续探寻...' : '点击开始探寻...'}
                   </p>
                 )}
               </div>
@@ -360,11 +376,7 @@ export default function Home() {
           
           .story-content p {
             margin: 0.5em 0;
-            opacity: 0;
-            animation: fadeIn 0.5s ease-in-out forwards;
-          }
-          
-          .story-content p.fade-in {
+            min-height: 1.5em;
             opacity: 1;
           }
           
