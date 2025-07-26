@@ -63,8 +63,7 @@ async def concurrent_1(
     print(f"后端收到了文本: '{user_input}'")
     print(f"后端即将返回: {final_result}")
     print(f"正在存储至{util.QUEUE_MEMORY_PATH}")
-    poped = save_one_io_into_queue(user_input, final_result, util.QUEUE_MEMORY_PATH)
-    print(poped)
+    queue_memory_turns_str = save_one_io_into_queue(user_input, final_result, util.QUEUE_MEMORY_PATH)
     return final_result
 
 
