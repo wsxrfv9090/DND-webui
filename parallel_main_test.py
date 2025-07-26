@@ -24,8 +24,10 @@ try:
     all_skills_list = ai_process.load_skills_list()
     
     # 将技能列表转换为字符串，用于传递给AI prompt
-    skills_str = "、".join([skill.get('技能名称', '') for skill in all_skills_list])
+    # 使用新的技能字符串生成函数，确保格式正确
+    skills_str = "、".join([skill.get('技能名称', '').replace('：', '').replace(':', '').strip() for skill in all_skills_list if skill.get('技能名称', '').strip()])
     print("AI 服务初始化成功！")
+    print(f"技能列表: {skills_str}")
 except Exception as e:
     print(f"错误：AI 服务初始化失败 - {e}")
     # 在实际应用中，你可能希望在这里让应用启动失败

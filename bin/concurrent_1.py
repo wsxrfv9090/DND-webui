@@ -14,6 +14,12 @@ async def concurrent_1(
     """
     第一并发过程
     """
+    # 使用新的技能字符串生成函数
+    if not skills_str:
+        skills_str = util.get_skills_string()
+    
+    print(f"技能字符串: {skills_str}")  # 添加调试输出
+    
     # [改动 2]: 直接调用异步 AI 分析函数，并传入所需的全局变量
     need_judge, skill_name, difficulty = await apis.api_1_analyze_action(
         client = client,
@@ -22,11 +28,14 @@ async def concurrent_1(
         user_input = user_input
     )
 
+    print(f"判定结果: need_judge={need_judge}, skill_name={skill_name}, difficulty={difficulty}")  # 添加调试输出
+
     result_desc = ""
 
     if need_judge and skill_name:
         # 从传入的 player_skills 中获取角色在该技能上的成功率
         success_rate = util.get_skill_success_rate(skill_name, player_skills)
+        print(f"技能成功率: {success_rate}")  # 添加调试输出
         
         # 纯计算和随机操作，无需异步
         roll_result = random.randint(1, 100)
