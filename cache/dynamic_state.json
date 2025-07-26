@@ -1,0 +1,37 @@
+{
+    "plot_flags": {
+        "james_fate_known": false,
+        "brophy_identity_suspected": false,
+        "glaaki_avatar_discovered": false
+    },
+    "npc_states": {
+        "emily_livingstone": {
+            "status": "alive",
+            "met_players": false
+        },
+        "travis_bryce": {
+            "status": "alive",
+            "met_players": false
+        },
+        "robert_brophy": {
+            "status": "active_servant",
+            "cover_blown": false
+        }
+    },
+    "location_states": {
+        "squatters_lake_motel": {
+            "room_3_door": "locked"
+        },
+        "library_miskatonic": {
+            "squatter_lake_history_researched": true
+        }
+    },
+    "player_knowledge": {
+        "known_clues": [
+            "HANDOUT_1"
+        ],
+        "known_facts_atomic": [
+            "斯夸特湖区域有不祥的历史记录"
+        ]
+    }
+}
