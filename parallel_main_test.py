@@ -24,8 +24,7 @@ try:
     all_skills_list = ai_process.load_skills_list()
     
     # 将技能列表转换为字符串，用于传递给AI prompt
-    skills_str = "、".join([skill.get('name', '') for skill in all_skills_list])
-    
+    skills_str = "、".join([skill.get('技能名称', '') for skill in all_skills_list])
     print("AI 服务初始化成功！")
 except Exception as e:
     print(f"错误：AI 服务初始化失败 - {e}")
@@ -45,10 +44,10 @@ async def core_python_processing(user_input: str, player_skills: List[Dict[str, 
     """
     # [改动 2]: 直接调用异步 AI 分析函数，并传入所需的全局变量
     need_judge, skill_name, difficulty = await ai_process.analyze_action(
-        client=ai_client,
-        world_view=world_view,
-        skills_str=skills_str,
-        user_input=user_input
+        client = ai_client,
+        world_view = world_view,
+        skills_str = skills_str,
+        user_input = user_input
     )
 
     result_desc = ""
