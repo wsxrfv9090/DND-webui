@@ -15,7 +15,7 @@ def main_init() -> tuple[str, str, str, str, str]:
     """
     # API configuration
     CWD = os.getcwd()
-    
+
     API_KEY: str = "sk-1fPmr7wLVZy1QlPBPfBXB3bSO5Wc3UPBvTi8tSGfL7FYwyMe"
     BASE_URL: str = "https://api.moonshot.cn/v1"
     MODEL_NAME: str = "moonshot-v1-8k"
@@ -30,6 +30,9 @@ def main_init() -> tuple[str, str, str, str, str]:
     os.makedirs(MEMORY_SESSION_PATH, exist_ok = True)
     
     QUEUE_MEMORY_PATH = os.path.join(MEMORY_SESSION_PATH, 'queue_memory.txt')
+    if os.path.exists(QUEUE_MEMORY_PATH):
+        os.remove(QUEUE_MEMORY_PATH)
+        open(QUEUE_MEMORY_PATH, 'w').close()
     PROLONGED_MEMORY_PATH = os.path.join(MEMORY_SESSION_PATH, 'prolonged_memory.json')
 
     return API_KEY, BASE_URL, MODEL_NAME, CACHE_DIR, WORLD_VIEW_PATH, SKILLS_PATH, MEMORY_SESSION_PATH, QUEUE_MEMORY_PATH, PROLONGED_MEMORY_PATH

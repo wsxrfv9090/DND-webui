@@ -1,7 +1,5 @@
 import bin.utility as util
 import bin.concurrent_1 as cur_1
-import bin.apis as apis
-
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
