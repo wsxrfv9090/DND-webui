@@ -71,7 +71,7 @@ async def concurrent_1(
     return final_result
 
 
-def save_one_io_into_queue(input_text: str, output_text: str, filename: str, max_turns: int = 5):
+def save_one_io_into_queue(input_text: str, output_text: str, filename: str, max_turns: int = 10):
     """
     将一次用户输入和AI输出（可以是多行）保存到文本文件中，并维持一个固定大小的对话队列。
     
