@@ -25,12 +25,13 @@ async def api_1_analyze_action(
     completion = await client.chat.completions.create(
         model = util.MODEL_NAME,
         messages=[
-            {"role": "system", "content": "你是一个严格的TRPG规则裁判AI，只输出结构化判定结果。"},
+            {"role": "system", "content": "你是一个严格的TRPG规则裁判AI，只输出结构化判定结果。技能名称必须完全匹配技能列表中的名称。"},
             {"role": "user", "content": prompt}
         ],
         temperature=0.1,
     )
     ai_reply = completion.choices[0].message.content.strip()
+    print(f"AI分析结果: {ai_reply}")  # 添加调试输出
 
     if ai_reply.startswith("True-"):
         parts = ai_reply.split("-")

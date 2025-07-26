@@ -101,17 +101,18 @@ def format_check_result_string(skill_name: str, difficulty: int, roll_result: in
 def load_world_view() -> str:
     """加载世界观设定"""
     default_world_view = (
-        "【世界观设定：1920年代的阿卡姆】\n\n"
-        "时代背景：1920年代的美国，禁酒令时期，社会变革与神秘主义并存。"
-        "阿卡姆是一座虚构的新英格兰小镇，位于马萨诸塞州，以其古老的建筑、"
-        "神秘的传说和密斯卡托尼克大学而闻名。"
+        
+        "在克苏鲁神话背景下，本剧本的世界观是一个20世纪20年代的美国，表面上宁静却潜藏着不可名状的恐怖。\n"
+        "旧日支配者的影响悄然渗透进人类世界，通过梦境与异教信徒操控现实。神秘、疯狂与未知的力量潜藏在被遗忘的角落，常人难以察觉。\n"
+        "玩家扮演的调查员将在超自然与理性之间挣扎.在斯夸特湖汽车旅店，面对在隐藏于日常之下的诡秘真相，逐步揭开一场围绕神祇信仰与人类堕落的恐怖阴谋。\n"
+        "理智有限，危险常在，结局往往令人绝望。"
     )
     return load_text_file(WORLD_VIEW_PATH, default_world_view)
 
 def load_skills_list() -> List[Dict[str, Any]]:
     """加载技能列表"""
     default_skills = [
-        {"name": skill} for skill in [
+        {"技能名称": skill} for skill in [
             "信用评级", "说服", "侦查", "心理学", "闪避", "格斗", "射击", "驾驶",
             "图书馆使用", "聆听", "潜行", "妙手", "恐吓", "法律", "医学", "急救",
             "攀爬", "跳跃", "游泳", "投掷", "取悦", "乔装", "锁匠", "机械维修",
@@ -121,3 +122,17 @@ def load_skills_list() -> List[Dict[str, Any]]:
         ]
     ]
     return load_json_file(SKILLS_PATH, default_skills)
+
+def get_skills_string() -> str:
+    """获取格式化的技能字符串，用于AI prompt"""
+    skills_list = load_skills_list()
+    # 清理技能名称，移除冒号等特殊字符
+    cleaned_skills = []
+    for skill in skills_list:
+        skill_name = skill.get("技能名称", "")
+        # 移除冒号等特殊字符
+        cleaned_name = skill_name.replace("：", "").replace(":", "").strip()
+        if cleaned_name:
+            cleaned_skills.append(cleaned_name)
+    
+    return "、".join(cleaned_skills)
