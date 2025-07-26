@@ -317,17 +317,51 @@ const Page = () => {
             <div style={{ 
                 fontSize: 32, 
                 fontWeight: 'bold', 
-                marginBottom: 24, 
-                letterSpacing: 2, 
-                color: '#6a8a9a', 
-                textShadow: '0 0 16px #4a6a7a, 0 2px 8px #000',
-                background: 'linear-gradient(135deg, #1a2a3a 0%, #2a3a4a 100%)',
-                borderRadius: 12,
-                padding: '10px 20px',
-                textAlign: 'center'
+                margin: '0 0 32px 0',
+                padding: '16px 40px',
+                letterSpacing: 1.5, 
+                color: '#4a4a4a',
+                background: 'rgba(245, 245, 240, 0.85)',
+                borderRadius: '8px',
+                textAlign: 'center',
+                boxShadow: '4px 4px 12px rgba(0,0,0,0.1), -2px -2px 8px rgba(255,255,255,0.8)',
+                border: '1px solid rgba(0,0,0,0.08)',
+                position: 'relative',
+                overflow: 'hidden',
+                fontFamily: '"Permanent Marker", cursive',
+                textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
             }}>
-                AllStory
+                <div style={{
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'linear-gradient(45deg, rgba(255,255,255,0.2) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.05) 75%, rgba(0,0,0,0.05))',
+                    backgroundSize: '20px 20px',
+                    opacity: 0.5,
+                    pointerEvents: 'none'
+                }} />
+                <span style={{
+                    position: 'relative',
+                    zIndex: 1,
+                    background: 'linear-gradient(90deg, #6a8a9a, #8a9aaa, #6a8a9a)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundSize: '200% auto',
+                    animation: 'gradient 3s ease infinite'
+                }}>
+                    AllStory
+                </span>
             </div>
+            <style jsx global>{`
+                @keyframes gradient {
+                    0% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                    100% { background-position: 0% 50%; }
+                }
+            `}</style>
             
             {/* 白板容器 */}
             <div style={styles.chatBox}>
