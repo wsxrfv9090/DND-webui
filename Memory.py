@@ -138,9 +138,7 @@ def main_game_loop():
     # print(kp_prompt) # 你可以打印出来看看效果
 
     # 2. KP Agent处理输入，生成回应 (这里是伪代码)
-    # kp_response = call_kp_agent(kp_prompt, player_input)
-    # print(f"KP: {kp_response}")
-    # interaction_log = f"Player: {player_input}\nKP: {kp_response}"
+    
 
     # 3. 长期记忆Agent分析交互 (这里是伪代码)
     # summary = call_long_term_agent(interaction_log)
