@@ -68,11 +68,17 @@ def perform_check(roll_result: int, success_rate: int, difficulty: int) -> bool:
     threshold = math.floor(success_rate * modifier)
     return roll_result <= threshold
 
-def format_check_result_string(skill_name: str, difficulty: int, roll_result: int, success: bool) -> str:
+def format_check_result_string(skill_name: str, difficulty: int, roll_result: int, success: bool, success_rate: int) -> str:
     """生成格式化的检定结果描述文本"""
     diff_map = {0: "普通", 1: "困难", 2: "极难"}
     outcome = "成功" if success else "失败"
-    return f"你进行了一次[{skill_name}]({diff_map.get(difficulty, '普通')})检定，骰点结果为 {roll_result}，判定 {outcome}。"
+    
+    # 计算判定成功需要的点数
+    modifiers = {0: 1, 1: 0.5, 2: 0.2}
+    modifier = modifiers.get(difficulty, 1)
+    threshold = math.floor(success_rate * modifier)
+    
+    return f"您的判定技能是{skill_name}（难度：{diff_map.get(difficulty, '普通')}），骰子点数是{roll_result}，判定成功需要{threshold}点数，所以您{outcome}了。"
 
 # --- 从原Class中拆分出的数据加载函数 ---
 def load_world_view() -> str:
@@ -215,7 +221,7 @@ async def main():
         print(f"[你掷出了 D100 = {roll}]")
 
         is_success = perform_check(roll, player_skill_rate, difficulty)
-        judge_result_str = format_check_result_string(skill, difficulty, roll, is_success)
+        judge_result_str = format_check_result_string(skill, difficulty, roll, is_success, player_skill_rate)
         print(f"[{judge_result_str}]")
     else:
         print("[AI裁判认为这只是普通行动，无需检定]")
