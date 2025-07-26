@@ -27,6 +27,8 @@ async def api_1_analyze_action(
         temperature=0.1,
     )
     ai_reply = completion.choices[0].message.content.strip()
+    judge_result = ai_reply
+
     print(f"AI分析结果: {ai_reply}")  # 添加调试输出
 
     if ai_reply.startswith("True-"):

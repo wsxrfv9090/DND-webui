@@ -2,6 +2,9 @@
 // 引入 React 相关钩子
 import '../page_fonts.css';
 import React, { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import 'github-markdown-css/github-markdown.css'; 
 
 // 白板便利贴风格的样式对象
 const styles = {
@@ -74,11 +77,16 @@ const styles = {
     },
     // AI 消息卡片样式 - 黄色便利贴
     aiMsg: {
-        background: '#fff8c4',
-        border: '1px solid #e0d8a0',
+        background: '#f9f5e9',
+        border: '1px solid #e0d5b8',
+        margin: '15px 0',
         alignSelf: 'flex-start',
         marginRight: 'auto',
-        marginLeft: '10px',
+        marginLeft: '20px',
+        fontSize: '20px', 
+        '&:hover': {
+            transform: 'rotate(-1deg)',
+        },
         '&::after': {
             content: '""',
             position: 'absolute',
@@ -90,11 +98,16 @@ const styles = {
     },
     // 玩家消息卡片样式 - 蓝色便利贴
     playerMsg: {
-        background: '#e1f5fe',
-        border: '1px solid #b3e5fc',
+        background: '#e3f2fd',
+        border: '1px solid #bbdefb',
+        margin: '15px 0',
         alignSelf: 'flex-end',
         marginLeft: 'auto',
-        marginRight: '10px',
+        marginRight: '20px',
+        fontSize: '20px', 
+        '&:hover': {
+            transform: 'rotate(1deg)',
+        },
         '&::after': {
             content: '""',
             position: 'absolute',
@@ -304,17 +317,51 @@ const Page = () => {
             <div style={{ 
                 fontSize: 32, 
                 fontWeight: 'bold', 
-                marginBottom: 24, 
-                letterSpacing: 2, 
-                color: '#6a8a9a', 
-                textShadow: '0 0 16px #4a6a7a, 0 2px 8px #000',
-                background: 'linear-gradient(135deg, #1a2a3a 0%, #2a3a4a 100%)',
-                borderRadius: 12,
-                padding: '10px 20px',
-                textAlign: 'center'
+                margin: '0 0 32px 0',
+                padding: '16px 40px',
+                letterSpacing: 1.5, 
+                color: '#4a4a4a',
+                background: 'rgba(245, 245, 240, 0.85)',
+                borderRadius: '8px',
+                textAlign: 'center',
+                boxShadow: '4px 4px 12px rgba(0,0,0,0.1), -2px -2px 8px rgba(255,255,255,0.8)',
+                border: '1px solid rgba(0,0,0,0.08)',
+                position: 'relative',
+                overflow: 'hidden',
+                fontFamily: '"Permanent Marker", cursive',
+                textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
             }}>
-                AllStory
+                <div style={{
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'linear-gradient(45deg, rgba(255,255,255,0.2) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.05) 75%, rgba(0,0,0,0.05))',
+                    backgroundSize: '20px 20px',
+                    opacity: 0.5,
+                    pointerEvents: 'none'
+                }} />
+                <span style={{
+                    position: 'relative',
+                    zIndex: 1,
+                    background: 'linear-gradient(90deg, #6a8a9a, #8a9aaa, #6a8a9a)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundSize: '200% auto',
+                    animation: 'gradient 3s ease infinite'
+                }}>
+                    AllStory
+                </span>
             </div>
+            <style jsx global>{`
+                @keyframes gradient {
+                    0% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                    100% { background-position: 0% 50%; }
+                }
+            `}</style>
             
             {/* 白板容器 */}
             <div style={styles.chatBox}>
@@ -348,15 +395,15 @@ const Page = () => {
                         
                         return (
                             <div 
-                                key={idx}
+                                key={idx} 
+                                className="message-card"
                                 style={{
                                     ...styles.messageCard,
                                     ...(msg.role === 'ai' ? styles.aiMsg : styles.playerMsg),
-                                    transform: `rotate(${style.rotation}deg) translateY(${style.offset}px)`,
-                                    cursor: 'pointer',
+                                    transform: `rotate(${messageStyles[idx]?.rotation || 0}deg) translate(${messageStyles[idx]?.offset || 0}px)`,
+                                    transition: 'all 0.3s ease',
                                 }}
                                 onClick={() => {
-                                    // 点击时重新随机旋转
                                     const newStyles = [...messageStyles];
                                     newStyles[idx] = {
                                         rotation: getRandomRotation(),
@@ -373,14 +420,21 @@ const Page = () => {
                                     transform: 'translateX(-50%)',
                                 }} />
                                 
-                                {/* 消息内容 */}
-                                <div style={{
-                                    padding: '10px',
-                                    fontSize: '14px',
-                                    lineHeight: '1.5',
+                                {/* 消息内容 - 使用Markdown渲染 */}
+                                <div className="markdown-body" style={{
+                                    padding: '15px',
+                                    fontSize: '20px',
+                                    lineHeight: '1.9',
                                     color: '#333',
+                                    backgroundColor: 'transparent',
                                 }}>
-                                    {formattedText}
+                                    {msg.role === 'ai' ? (
+                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                            {msg.text}
+                                        </ReactMarkdown>
+                                    ) : (
+                                        formattedText
+                                    )}
                                 </div>
                                 
                                 {/* 发送者标签 */}
@@ -497,6 +551,74 @@ const Page = () => {
                     opacity: 1;
                     transform: scale(1);
                     transition: opacity 300ms, transform 300ms;
+                }
+            `}</style>
+            
+            {/* 全局Markdown样式 */}
+            <style jsx global>{`
+                .message-card .markdown-body {
+                    font-family: inherit;
+                    font-size: inherit;
+                    line-height: 1.7;
+                    padding: 0;
+                    background-color: transparent;
+                }
+                .message-card .markdown-body pre {
+                    background-color: rgba(0,0,0,0.05);
+                    padding: 12px;
+                    border-radius: 6px;
+                    overflow-x: auto;
+                }
+                .message-card .markdown-body code {
+                    font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+                    padding: 0.2em 0.4em;
+                    margin: 0;
+                    font-size: 85%;
+                    background-color: rgba(27,31,35,0.05);
+                    border-radius: 3px;
+                }
+                .message-card .markdown-body pre code {
+                    background-color: transparent;
+                    padding: 0;
+                    margin: 0;
+                    font-size: 100%;
+                    word-break: normal;
+                    white-space: pre;
+                    overflow: visible;
+                }
+                .message-card .markdown-body a {
+                    color: #0366d6;
+                    text-decoration: none;
+                }
+                .message-card .markdown-body a:hover {
+                    text-decoration: underline;
+                }
+                .message-card .markdown-body blockquote {
+                    border-left: 4px solid #dfe2e5;
+                    color: #6a737d;
+                    padding: 0 1em;
+                    margin: 0.5em 0;
+                }
+                .message-card .markdown-body blockquote p {
+                    margin: 0.5em 0;
+                }
+                .message-card .markdown-body table {
+                    border-collapse: collapse;
+                    width: 100%;
+                    margin: 16px 0;
+                }
+                .message-card .markdown-body th,
+                .message-card .markdown-body td {
+                    border: 1px solid #dfe2e5;
+                    padding: 6px 13px;
+                    text-align: left;
+                }
+                .message-card .markdown-body tr {
+                    background-color: #fff;
+                    border-top: 1px solid #c6cbd1;
+                }
+                .message-card .markdown-body tr:nth-child(2n) {
+                    background-color: #f6f8fa;
                 }
             `}</style>
         </div>

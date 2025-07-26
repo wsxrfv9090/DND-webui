@@ -63,7 +63,7 @@ async def concurrent_1(
     )
     
     # 组合最终结果
-    final_result = ai_response
+    final_result = util.output_judge_result+"\n"+ai_response
     
     print(f"后端收到了文本: '{user_input}'")
     print(f"后端即将返回: {final_result}")
