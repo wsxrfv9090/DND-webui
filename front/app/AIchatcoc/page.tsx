@@ -1,5 +1,6 @@
 'use client'
 // 引入 React 相关钩子
+import '../page_fonts.css';
 import React, { useState, useRef, useEffect } from 'react';
 
 // 魔幻羊皮纸风格的简单内联样式对象
@@ -7,13 +8,18 @@ const styles = {
     // 页面主容器样式
     container: {
         display: 'flex', flexDirection: 'column' as const, alignItems: 'center', justifyContent: 'center', minHeight: '100vh', 
-        background: 'linear-gradient(180deg, #0a1a2a 0%, #1a3a4a 50%, #0d2b3a 100%)', 
+        backgroundColor: '#1a2a2a',
+        backgroundImage: `linear-gradient(rgba(26, 155, 155, 0.9), rgba(27, 105, 183, 0.9)), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Crect x='0' y='0' width='100' height='100'/%3E%3C/g%3E%3C/svg%3E")`, 
         fontFamily: 'serif',
+        background: 'linear-gradient(135deg, #1a2a3a 0%, #2a3a4a 100%)',
+        border: '4px solid #2a4a5a', borderRadius: 24, 
+        boxShadow: '0 4px 24px #0008, inset 0 1px 2px #4a6a7a', 
+        padding: 24, marginBottom: 16,
     },
     // 聊天框样式
     chatBox: {
         width: '100%', maxWidth: 600, minHeight: 500, 
-        background: 'linear-gradient(135deg, #1a2a3a 0%, #2a3a4a 100%)',
+        background: 'linear-gradient(135deg,rgb(222, 221, 199) 0%,rgb(222, 221, 199) 100%)',
         border: '4px solid #2a4a5a', borderRadius: 24, 
         boxShadow: '0 4px 24px #0008, inset 0 1px 2px #4a6a7a', 
         padding: 24, marginBottom: 16,
@@ -267,10 +273,3 @@ const Page = () => {
 
 // 导出主页面组件
 export default Page;
-
-/* 在文件底部追加动画样式 */
-<style jsx global>{`
-@keyframes magic-bounce {
-  0%, 80%, 100% { transform: translateY(0); opacity: 1; }
-  40% { transform: translateY(-10px); opacity: 0.7; }
-}`}</style>
