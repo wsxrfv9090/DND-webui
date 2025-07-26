@@ -3,11 +3,11 @@ import json
 
 # --- 1. 初始化设置 ---
 CWD = os.getcwd()
-MEMORY_PATH = os.path.join(CWD, 'Cache')
+MEMORY_PATH = os.path.join(CWD, 'cache')
 SESSION_PATH = os.path.join(MEMORY_PATH, 'session_memory')
 
 # 定义文件路径
-WORLDVIEW_BASE_PATH = os.path.join(MEMORY_PATH, 'worldview_base.txt')
+WORLDVIEW_BASE_PATH = os.path.join(CWD, 'cache', 'world_view.txt')
 DYNAMIC_STATE_PATH = os.path.join(MEMORY_PATH, 'dynamic_state.json')
 
 def initialize_memory():
