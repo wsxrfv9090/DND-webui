@@ -1,3 +1,4 @@
+
 import bin.utility as util
 import bin.concurrent_1 as cur_1
 
@@ -14,6 +15,7 @@ try:
     
     # 加载世界观和技能列表
     world_view = util.load_world_view()
+    judge_rules = util.load_judge_rules()
     all_skills_list = util.load_skills_list()
     
     # 将技能列表转换为字符串，用于传递给AI prompt
@@ -51,7 +53,7 @@ async def process_text_endpoint(request_data: dict):
     with open(json_filename, 'r', encoding='utf-8') as f:
         skills_list = json.load(f)
     # 调用核心逻辑，并传入玩家技能表
-    processed_result = await cur_1.concurrent_1(input_text, skills_list, world_view, skills_str ,ai_client)
+    processed_result = await cur_1.concurrent_1(input_text, skills_list, world_view, judge_rules, skills_str ,ai_client)
 
     return {"output": processed_result}
 

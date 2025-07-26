@@ -1,3 +1,4 @@
+
 import os
 import json
 from typing import Optional, Dict, List, Any
@@ -24,6 +25,7 @@ def main_init() -> tuple[str, str, str, str, str]:
     CACHE_DIR: str = os.path.join(CWD, 'cache')
     os.makedirs(CACHE_DIR, exist_ok = True)
     WORLD_VIEW_PATH: str = os.path.join(CACHE_DIR, 'world_view.txt')
+    JUDGE_RULES_PATH: str = os.path.join(CACHE_DIR, 'judge_rules.txt')
     SKILLS_PATH: str = os.path.join(CACHE_DIR, 'skills.json')
     
     MEMORY_SESSION_PATH = os.path.join(CACHE_DIR, 'session_memory')
@@ -47,9 +49,9 @@ def main_init() -> tuple[str, str, str, str, str]:
         f.write(initial_story_text)
     PROLONGED_MEMORY_PATH = os.path.join(MEMORY_SESSION_PATH, 'prolonged_memory.json')
 
-    return API_KEY, BASE_URL, MODEL_NAME, CACHE_DIR, WORLD_VIEW_PATH, SKILLS_PATH, MEMORY_SESSION_PATH, QUEUE_MEMORY_PATH, PROLONGED_MEMORY_PATH
+    return API_KEY, BASE_URL, MODEL_NAME, CACHE_DIR, WORLD_VIEW_PATH, JUDGE_RULES_PATH, SKILLS_PATH, MEMORY_SESSION_PATH, QUEUE_MEMORY_PATH, PROLONGED_MEMORY_PATH
 
-API_KEY, BASE_URL, MODEL_NAME, CACHE_DIR, WORLD_VIEW_PATH, SKILLS_PATH, MEMORY_SESSION_PATH, QUEUE_MEMORY_PATH, PROLONGED_MEMORY_PATH = main_init()
+API_KEY, BASE_URL, MODEL_NAME, CACHE_DIR, WORLD_VIEW_PATH, JUDGE_RULES_PATH, SKILLS_PATH, MEMORY_SESSION_PATH, QUEUE_MEMORY_PATH, PROLONGED_MEMORY_PATH = main_init()
 
 def ensure_cache_dir_exists():
     """确保缓存目录存在"""
@@ -102,19 +104,13 @@ def perform_check_coc(roll_result: int, success_rate: int, difficulty: int) -> b
     threshold = math.floor(success_rate * modifier)
     return roll_result <= threshold
 
-def format_check_result_string(skill_name: str, difficulty: int, roll_result: int, success: bool, success_rate: int) -> str:
+def format_check_result_string(skill_name: str, difficulty: int, roll_result: int, success: bool) -> str:
     """
     生成格式化的检定结果描述文本
     """
     diff_map = {0: "普通", 1: "困难", 2: "极难"}
     outcome = "成功" if success else "失败"
-    
-    # 计算判定成功需要的点数
-    modifiers = {0: 1, 1: 0.5, 2: 0.2}
-    modifier = modifiers.get(difficulty, 1)
-    threshold = math.floor(success_rate * modifier)
-    
-    return f"您的判定技能是{skill_name}（难度：{diff_map.get(difficulty, '普通')}），骰子点数是{roll_result}，判定成功需要{threshold}点数，所以您{outcome}了。"
+    return f"你进行了一次[{skill_name}]({diff_map.get(difficulty, '普通')})检定，骰点结果为 {roll_result}，判定 {outcome}。"
 
 def load_world_view() -> str:
     """加载世界观设定"""
@@ -126,6 +122,9 @@ def load_world_view() -> str:
         "理智有限，危险常在，结局往往令人绝望。"
     )
     return load_text_file(WORLD_VIEW_PATH, default_world_view)
+
+def load_judge_rules() -> str:
+    return load_text_file(JUDGE_RULES_PATH, 'NAN')
 
 def load_skills_list() -> List[Dict[str, Any]]:
     """加载技能列表"""

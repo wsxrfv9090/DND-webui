@@ -9,6 +9,7 @@ async def concurrent_1(
     user_input: str, 
     player_skills: List[Dict[str, Any]],
     world_view: str,
+    judge_rules: str,
     skills_str: str,
     client,
     ) -> str:
@@ -24,7 +25,7 @@ async def concurrent_1(
     # [改动 2]: 直接调用异步 AI 分析函数，并传入所需的全局变量
     need_judge, skill_name, difficulty = await apis.api_1_analyze_action(
         client = client,
-        world_view = world_view,
+        judge_rules = judge_rules,
         skills_str = skills_str,
         user_input = user_input
     )
@@ -43,7 +44,7 @@ async def concurrent_1(
         is_success = util.perform_check_coc(roll_result, success_rate, difficulty)
         
         # 生成格式化的检定结果描述
-        judge_desc = util.format_check_result_string(skill_name, difficulty, roll_result, is_success, success_rate)
+        judge_desc = util.format_check_result_string(skill_name, difficulty, roll_result, is_success)
         result_desc = judge_desc # 将检定结果作为叙述的一部分
         print(judge_desc)
     else:
@@ -62,10 +63,7 @@ async def concurrent_1(
     )
     
     # 组合最终结果
-    if result_desc:
-        final_result = result_desc + "\n" + ai_response
-    else:
-        final_result = ai_response
+    final_result = ai_response
     
     print(f"后端收到了文本: '{user_input}'")
     print(f"后端即将返回: {final_result}")
