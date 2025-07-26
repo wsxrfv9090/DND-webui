@@ -52,12 +52,12 @@ async def api_2_generate_description(
 ) -> str:
     """异步生成场景描述，营造克苏鲁氛围"""
     system_prompt = (
-        "你是TRPG:Call of Cthulhu世界观的叙述AI（守秘人/KP）。你的任务是基于1920年代阿卡姆世界观，"
+        "你是TRPG:Call of Cthulhu世界观的叙述AI（守秘人/KP）。你的任务是基于我们提供的世界观，和我们提供给你的先前的记忆"
         "用生动、悬疑且带有时代感的语言进行描述，营造出神秘而压抑的氛围。"
     )
     
     user_prompt = (
-        f"{world_view}\n\n"
+        f"这是我们的世界观：{world_view}\n\n"
         f"情景：用户的行动是“{user_input}”，此行动的检定结果为“{judge_result}”。\n"
         f"任务：请基于此结果，生动地描述接下来发生了什么。"
     ) if judge_result else (
