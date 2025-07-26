@@ -76,7 +76,7 @@ async def api_2_generate_description(
     "以上内容都是【守密人专属记忆 (KP-ONLY MEMORY)】"
     "此部分内容严禁以任何形式直接告知玩家。"
 
- 
+   
     system_prompt = (
         "你是TRPG:Call of Cthulhu世界观的叙述AI（守秘人/KP）。再次重复一遍一些你的注意事项：{AI_KP_DUTY}。你的任务是基于我们提供的世界观，和我们下面即将提供给你的记忆"
         "用生动、悬疑且带有时代感的语言进行描述，营造出神秘而压抑的氛围。"
