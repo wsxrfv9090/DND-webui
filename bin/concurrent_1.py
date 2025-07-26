@@ -53,7 +53,7 @@ async def concurrent_1(
     with open(util.QUEUE_MEMORY_PATH, 'r', encoding = 'utf-8') as f:
         queue = f.read()
     # [改动 3]: 调用异步 AI 描述生成函数，并传入所需参数
-    world_desc = await apis.api_2_generate_description(
+    ai_response = await apis.api_2_generate_description(
         client = client,
         world_view = world_view,
         user_input = user_input,
@@ -62,7 +62,7 @@ async def concurrent_1(
     )
     
     # 组合最终结果
-    final_result = world_desc
+    final_result = ai_response
     
     print(f"后端收到了文本: '{user_input}'")
     print(f"后端即将返回: {final_result}")
