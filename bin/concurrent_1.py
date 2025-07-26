@@ -57,7 +57,7 @@ async def concurrent_1(
         client = client,
         world_view = world_view,
         user_input = user_input,
-        queue_memory = queue
+        queue_memory = queue,
         judge_result = result_desc if result_desc else None
     )
     
