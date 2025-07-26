@@ -105,7 +105,7 @@ const featherSvg = (
 type Message = { role: 'ai' | 'player'; text: string };
 // 初始消息，AI 欢迎语
 const initialMessages: Message[] = [
-    { role: 'ai', text: '准备好探寻真相了吗...' },
+    { role: 'ai', text: '站在斯夸特湖汽车旅店的门前，正在寻找失踪的詹姆斯·弗雷泽的调查员，你，深深地感到在这座看似平静的旅店背后，隐藏着比死亡更可怕的秘密...' },
 ];
 
 // 等待特效组件：魔幻风格圆点跳动
@@ -214,11 +214,24 @@ const Page = () => {
             <div style={styles.chatBox}>
                 {/* 消息列表 */}
                 <div style={styles.messages}>
-                    {messages.map((msg, idx) => (
-                        <div key={idx} style={msg.role === 'ai' ? styles.aiMsg : styles.playerMsg}>
-                            {msg.text}
-                        </div>
-                    ))}
+                    {messages.map((msg, idx) => {
+                        // 将文本中的换行符转换为React元素
+                        const formattedText = msg.text.split('\n').map((line, i, arr) => (
+                            <React.Fragment key={i}>
+                                {line}
+                                {i < arr.length - 1 && <br />}
+                            </React.Fragment>
+                        ));
+                        
+                        return (
+                            <div 
+                                key={idx} 
+                                style={msg.role === 'ai' ? styles.aiMsg : styles.playerMsg}
+                            >
+                                {formattedText}
+                            </div>
+                        );
+                    })}
                     {/* 等待特效 */}
                     {loading && (
                         <div style={{ display: 'flex', alignItems: 'center', minHeight: 32, margin: '8px 0 0 0' }}>
