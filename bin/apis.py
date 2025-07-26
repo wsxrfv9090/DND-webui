@@ -4,21 +4,16 @@ from typing import Tuple, Optional
 
 async def api_1_analyze_action(
     client: AsyncOpenAI, 
-    world_view: str, 
+    judge_rules: str, 
     skills_str: str, 
     user_input: str
 ) -> Tuple[bool, Optional[str], int]:
     """
     异步分析用户输入，判断是否需要技能检定、使用哪个技能以及难度。
     """
+    
     prompt = (
-        f"这是我们的世界观：{world_view}\n\n"
-        f"你是一个TRPG:Call of Cthulhu的规则裁判AI。请基于上述世界观判定用户行为。"
-        f"并且，为了自由度，请你相对更更能去判定用户行为是否需要技能检定。\n"
-        f"1. 该行为是否需要技能检定？\n"
-        f"2. 若需要，应使用哪个技能？（技能名必须严格来自技能列表）\n"
-        f"3. 难度是普通(0)、困难(1)还是极难(2)？\n"
-        f"严格按以下格式之一输出：\n- `True-技能名称-难度`\n- `False--`\n\n"
+        f"这是你输出的规则，必须**严格**执行：{judge_rules}\n\n"
         f"技能列表: {skills_str}\n"
         f"用户输入: '{user_input}'"
     )

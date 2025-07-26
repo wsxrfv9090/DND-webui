@@ -9,6 +9,7 @@ async def concurrent_1(
     user_input: str, 
     player_skills: List[Dict[str, Any]],
     world_view: str,
+    judge_rules: str,
     skills_str: str,
     client,
     ) -> str:
@@ -24,7 +25,7 @@ async def concurrent_1(
     # [改动 2]: 直接调用异步 AI 分析函数，并传入所需的全局变量
     need_judge, skill_name, difficulty = await apis.api_1_analyze_action(
         client = client,
-        world_view = world_view,
+        judge_rules = judge_rules,
         skills_str = skills_str,
         user_input = user_input
     )

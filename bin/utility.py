@@ -24,6 +24,7 @@ def main_init() -> tuple[str, str, str, str, str]:
     CACHE_DIR: str = os.path.join(CWD, 'cache')
     os.makedirs(CACHE_DIR, exist_ok = True)
     WORLD_VIEW_PATH: str = os.path.join(CACHE_DIR, 'world_view.txt')
+    JUDGE_RULES_PATH: str = os.path.join(CACHE_DIR, 'judge_rules.txt')
     SKILLS_PATH: str = os.path.join(CACHE_DIR, 'skills.json')
     
     MEMORY_SESSION_PATH = os.path.join(CACHE_DIR, 'session_memory')
@@ -47,9 +48,9 @@ def main_init() -> tuple[str, str, str, str, str]:
         f.write(initial_story_text)
     PROLONGED_MEMORY_PATH = os.path.join(MEMORY_SESSION_PATH, 'prolonged_memory.json')
 
-    return API_KEY, BASE_URL, MODEL_NAME, CACHE_DIR, WORLD_VIEW_PATH, SKILLS_PATH, MEMORY_SESSION_PATH, QUEUE_MEMORY_PATH, PROLONGED_MEMORY_PATH
+    return API_KEY, BASE_URL, MODEL_NAME, CACHE_DIR, WORLD_VIEW_PATH, JUDGE_RULES_PATH, SKILLS_PATH, MEMORY_SESSION_PATH, QUEUE_MEMORY_PATH, PROLONGED_MEMORY_PATH
 
-API_KEY, BASE_URL, MODEL_NAME, CACHE_DIR, WORLD_VIEW_PATH, SKILLS_PATH, MEMORY_SESSION_PATH, QUEUE_MEMORY_PATH, PROLONGED_MEMORY_PATH = main_init()
+API_KEY, BASE_URL, MODEL_NAME, CACHE_DIR, WORLD_VIEW_PATH, JUDGE_RULES_PATH, SKILLS_PATH, MEMORY_SESSION_PATH, QUEUE_MEMORY_PATH, PROLONGED_MEMORY_PATH = main_init()
 
 def ensure_cache_dir_exists():
     """确保缓存目录存在"""
@@ -120,6 +121,9 @@ def load_world_view() -> str:
         "理智有限，危险常在，结局往往令人绝望。"
     )
     return load_text_file(WORLD_VIEW_PATH, default_world_view)
+
+def load_judge_rules() -> str:
+    return load_text_file(JUDGE_RULES_PATH, 'NAN')
 
 def load_skills_list() -> List[Dict[str, Any]]:
     """加载技能列表"""
