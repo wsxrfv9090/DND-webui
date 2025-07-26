@@ -14,8 +14,83 @@ export default function Home() {
   const [subTitle, setSubTitle] = useState('');
   const [showCursorMain, setShowCursorMain] = useState(true);
   const [showCursorSub, setShowCursorSub] = useState(false);
+  const [showStory, setShowStory] = useState(false);
+  const [displayedText, setDisplayedText] = useState('');
+  const storyLines = [
+    '【主线故事】',
+    '在遥远的未来，人类文明已经发展到了星际时代。',
+    '你，一位年轻的探险家，意外发现了一个被遗忘的星球...',
+    '随着飞船降落在星球表面，你发现了一座巨大的古老遗迹。',
+    '墙壁上刻满了未知的文字，似乎隐藏着重要的秘密...',
+    '在遗迹的最深处，你发现了一个惊人的真相...',
+    '这个发现将永远改变人类对宇宙的认知。'
+  ];
+  const [currentLine, setCurrentLine] = useState(0);
+  const [currentText, setCurrentText] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [isFadingOut, setIsFadingOut] = useState(false);
+  const [showClickHint, setShowClickHint] = useState(false);
 
-  const fullMainTitle = 'Welcome to the ...';
+  const fullMainTitle = 'Welcome to AllStorys';
+  
+  // 处理打字效果
+  useEffect(() => {
+    if (!showStory) return;
+    
+    if (currentLine < storyLines.length) {
+      setIsTyping(true);
+      setShowClickHint(false);
+      const line = storyLines[currentLine];
+      let i = 0;
+      setCurrentText(''); // 清空当前文本
+      
+      const typingInterval = setInterval(() => {
+        if (i < line.length) {
+          setCurrentText(prev => prev + line.charAt(i));
+          i++;
+        } else {
+          clearInterval(typingInterval);
+          setIsTyping(false);
+          setShowClickHint(true);
+        }
+      }, 50);
+      
+      return () => clearInterval(typingInterval);
+    }
+  }, [showStory, currentLine]);
+  
+  // 处理点击事件
+  const handleStoryClick = () => {
+    // 如果正在打字，完成当前行
+    if (isTyping) {
+      const line = storyLines[currentLine];
+      setCurrentText(line);
+      setIsTyping(false);
+      setShowClickHint(true);
+      return;
+    }
+    
+    // 如果是最后一行，淡出并跳转
+    if (currentLine >= storyLines.length - 1) {
+      setIsFadingOut(true);
+      setTimeout(() => {
+        router.push('/AIchatcoc');
+      }, 1000);
+      return;
+    }
+    
+    // 继续下一行
+    setCurrentLine(prev => prev + 1);
+    setShowClickHint(false);
+  };
+
+  const handleStartClick = () => {
+    setShowStory(true);
+    setCurrentLine(0);
+    setCurrentText('');
+    setIsFadingOut(false);
+    setShowClickHint(false);
+  };
   const fullSubTitle = '... Made by us ...';
 
   useEffect(() => {
@@ -75,10 +150,32 @@ export default function Home() {
           </div>
           <button 
             className="start-btn" 
-            onClick={() => router.push('/AIchatcoc')}
+            onClick={handleStartClick}
           >
             探寻真相
           </button>
+          
+          {showStory && (
+            <div 
+              className={`story-overlay ${isFadingOut ? 'fade-out' : ''}`}
+              onClick={handleStoryClick}
+              style={{ cursor: 'pointer' }}
+            >
+              <div className="story-content">
+                {currentLine < storyLines.length && (
+                  <p>
+                    {currentText}
+                    <span className={`cursor ${isTyping ? 'blinking' : ''}`}>|</span>
+                  </p>
+                )}
+                {showClickHint && (
+                  <p className="click-hint">
+                    {currentLine < storyLines.length - 1 ? '继续探寻...' : '点击开始探寻...'}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
         </main>
         
         <div className="vignette"></div>
@@ -220,6 +317,80 @@ export default function Home() {
             border-color: #ac5e4b;
             box-shadow: 0 0 20px rgba(172, 94, 75, 0.4);
             transform: translateY(-3px);
+          }
+          
+          .story-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.5s ease-in-out forwards;
+          }
+          
+          .story-overlay.fade-out {
+            animation: fadeOut 1s ease-in-out forwards;
+          }
+          
+          .click-hint {
+            margin-top: 2rem;
+            opacity: 0.7;
+            font-size: 1.2rem;
+            animation: pulse 2s infinite;
+          }
+          
+          @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+          }
+          
+          .story-content {
+            color: #fff;
+            font-size: 2rem;
+            text-align: center;
+            line-height: 1.8;
+            max-width: 80%;
+            font-family: 'Courier New', monospace;
+          }
+          
+          .story-content p {
+            margin: 0.5em 0;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-in-out forwards;
+          }
+          
+          .story-content p.fade-in {
+            opacity: 1;
+          }
+          
+          .cursor {
+            display: inline-block;
+            margin-left: 2px;
+            color: #fff;
+          }
+          
+          .blinking {
+            animation: blink 0.7s infinite;
+          }
+          
+          @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+          }
+          
+          @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+          }
+          
+          @keyframes fadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
           }
         `}</style>
       </div>
