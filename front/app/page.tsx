@@ -32,7 +32,7 @@ export default function Home() {
   const [displayedLines, setDisplayedLines] = useState<string[]>([]);
   const [showClickHint, setShowClickHint] = useState(false);
 
-  const fullMainTitle = 'Welcome to AllStorys';
+  const fullMainTitle = 'Welcome to AllStory';
   
   // 处理打字效果
   useEffect(() => {
