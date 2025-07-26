@@ -3,7 +3,7 @@ import os
 import json
 from typing import Optional, Dict, List, Any
 import math
-
+output_judge_result = ""
 
 
 def main_init() -> tuple[str, str, str, str, str]:
@@ -108,9 +108,11 @@ def format_check_result_string(skill_name: str, difficulty: int, roll_result: in
     """
     生成格式化的检定结果描述文本
     """
+    global output_judge_result
     diff_map = {0: "普通", 1: "困难", 2: "极难"}
     outcome = "成功" if success else "失败"
-    return f"你进行了一次[{skill_name}]({diff_map.get(difficulty, '普通')})检定，骰点结果为 {roll_result}，判定 {outcome}。"
+    output_judge_result = f"你进行了一次[{skill_name}]({diff_map.get(difficulty, '普通')})检定，骰点结果为 {roll_result}，判定 {outcome}。"
+    return output_judge_result
 
 def load_world_view() -> str:
     """加载世界观设定"""
