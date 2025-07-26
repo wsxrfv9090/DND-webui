@@ -30,9 +30,21 @@ def main_init() -> tuple[str, str, str, str, str]:
     os.makedirs(MEMORY_SESSION_PATH, exist_ok = True)
     
     QUEUE_MEMORY_PATH = os.path.join(MEMORY_SESSION_PATH, 'queue_memory.txt')
-    if os.path.exists(QUEUE_MEMORY_PATH):
-        os.remove(QUEUE_MEMORY_PATH)
-        open(QUEUE_MEMORY_PATH, 'w').close()
+    initial_story_text = """1924年，马萨诸塞州，阿卡姆市。
+
+窗外，连绵的秋雨不知疲倦地敲打着玻璃，将街道的煤气灯光晕染成一片模糊的昏黄。你正身处自己位于“德尔伍德古物研究会”三楼的办公室里。空气中弥漫着旧书、皮革与淡淡烟草混合的熟悉气味，唯一的声响来自角落里那座老式落地钟沉稳而规律的滴答声。
+
+你的桌上摊着几份关于新英格兰地区乡野传说的手稿，其中一篇关于“蹲占者之湖”（Squatter Lake）的记述尤其让你在意——文中提到了怪异的乌鸦群和某些无法被点燃的木材。你正沉浸在这些尘封的记述中，试图将零散的线索拼凑成一个完整的图案。
+
+就在这时——
+
+笃，笃，笃。
+
+三声清晰而有力的敲门声，穿透了雨声和钟摆声，打破了书房的宁静。这声音听起来既不匆忙，也不犹豫，带着一种不容拒绝的决断。
+
+你的思绪被打断了。你会怎么做？"""
+    with open(QUEUE_MEMORY_PATH, 'w', encoding='utf-8') as f:
+        f.write(initial_story_text)
     PROLONGED_MEMORY_PATH = os.path.join(MEMORY_SESSION_PATH, 'prolonged_memory.json')
 
     return API_KEY, BASE_URL, MODEL_NAME, CACHE_DIR, WORLD_VIEW_PATH, SKILLS_PATH, MEMORY_SESSION_PATH, QUEUE_MEMORY_PATH, PROLONGED_MEMORY_PATH
