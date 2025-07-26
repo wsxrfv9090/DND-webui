@@ -48,6 +48,7 @@ async def api_2_generate_description(
     client: AsyncOpenAI, 
     world_view: str, 
     user_input: str, 
+    queue_memory: str,
     judge_result: Optional[str] = None
 ) -> str:
     """异步生成场景描述，营造克苏鲁氛围"""

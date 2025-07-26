@@ -49,11 +49,15 @@ async def concurrent_1(
     else:
         print("无需判定。")
 
+
+    with open(util.QUEUE_MEMORY_PATH, 'r', encoding = 'utf-8') as f:
+        queue = f.read()
     # [改动 3]: 调用异步 AI 描述生成函数，并传入所需参数
     world_desc = await apis.api_2_generate_description(
         client = client,
         world_view = world_view,
         user_input = user_input,
+        queue_memory = queue
         judge_result = result_desc if result_desc else None
     )
     
@@ -63,11 +67,11 @@ async def concurrent_1(
     print(f"后端收到了文本: '{user_input}'")
     print(f"后端即将返回: {final_result}")
     print(f"正在存储至{util.QUEUE_MEMORY_PATH}")
-    queue_memory_turns_str = save_one_io_into_queue(user_input, final_result, util.QUEUE_MEMORY_PATH)
+    save_one_io_into_queue(user_input, final_result, util.QUEUE_MEMORY_PATH)
     return final_result
 
 
-def save_one_io_into_queue(input_text: str, output_text: str, filename: str, max_turns: int = 5) -> Tuple[str, ...]:
+def save_one_io_into_queue(input_text: str, output_text: str, filename: str, max_turns: int = 5):
     """
     将一次用户输入和AI输出（可以是多行）保存到文本文件中，并维持一个固定大小的对话队列。
     
@@ -120,5 +124,3 @@ def save_one_io_into_queue(input_text: str, output_text: str, filename: str, max
         # 使用分隔符将所有轮次连接成一个字符串
         output_content = TURN_SEPARATOR.join(all_turns)
         f.write(output_content)
-        
-    return tuple(all_turns)
