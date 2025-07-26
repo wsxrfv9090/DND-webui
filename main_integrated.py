@@ -87,30 +87,6 @@ def process_text_endpoint(request_data: dict):
     processed_result = core_python_processing(input_text)
     return {"output": processed_result}
 
-# 新增接口：获取游戏状态
-@app.get("/game-status")
-def game_status_endpoint():
-    return get_game_status()
-
-# 新增接口：重置游戏
-@app.post("/reset-game")
-def reset_game_endpoint():
-    return reset_game()
-
-# 新增接口：获取游戏上下文
-@app.get("/game-context")
-def game_context_endpoint():
-    return get_game_context()
-
-# 新增接口：获取交互历史
-@app.get("/interaction-history")
-def interaction_history_endpoint():
-    return {
-        "session_id": session_id,
-        "history": interaction_history,
-        "count": len(interaction_history)
-    }
-
 # 测试服务器是否正常运行
 @app.get("/")
 def root_endpoint():
