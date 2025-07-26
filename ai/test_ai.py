@@ -52,7 +52,7 @@ def analyze_action(user_input):
     else:
         return False, None, None
 
-def generate_description(user_input, judge_result=None):
+def generate_description(user_input, judge_result = None):
     """
     用AI生成世界观下的描述。
     - user_input: 用户原话

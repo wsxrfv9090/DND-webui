@@ -5,6 +5,9 @@ import ai.test_ai as ai_process
 import json
 import math
 import random
+import os
+
+
 def core_python_processing(user_text: str) -> str:
     """
     这里面放你所有的复杂Python代码。
@@ -39,6 +42,7 @@ def core_python_processing(user_text: str) -> str:
         print("无需判定。")
         # 直接生成世界观下的AI描述
         world_desc = ai_process.generate_description(user_input)
+    # 实现长期记忆 function(txt位置， 上次的输出)
 
     result = world_desc
     print(f"后端收到了文本: '{user_input}'")
