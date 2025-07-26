@@ -23,10 +23,8 @@ def analyze_action(user_input):
     - skill_name: str 或 None
     - difficulty: int (0/1/2) 或 None
     """
-    world_view = load_world_view()
     prompt = (
-        f"{world_view}\n\n"
-        f"你是一个TRPG:Call of Cthulhu的规则裁判AI，基于上述世界观设定进行判定。用户输入一句话，请你判断：\n"
+        f"你是一个TRPG规则裁判AI。用户输入一句话，请你判断：\n"
         f"1. 这句话是否需要技能判定？\n"
         f"2. 如果需要，应该用哪个技能？（技能名称必须严格来自技能列表）\n"
         f"3. 难度是普通(0)、困难(1)还是极难(2)？\n"
@@ -39,7 +37,7 @@ def analyze_action(user_input):
         messages=[
             {
                 "role": "system",
-                "content": "你是TRPG:Call of Cthulhu的规则裁判AI，基于1920年代阿卡姆世界观进行判定，只输出结构化判定结果。"
+                "content": "你是TRPG规则裁判AI，只输出结构化判定结果。"
             },
             {
                 "role": "user",
@@ -67,26 +65,20 @@ def generate_description(user_input, judge_result = None):
     - user_input: 用户原话
     - judge_result: 判定结果描述（可选）
     """
-    world_view = load_world_view()
-    
     if judge_result:
         prompt = (
-            f"{world_view}\n\n"
-            f"你是TRPG:Call of Cthulhu世界观的叙述AI。基于上述世界观设定，用户刚才说：'{user_input}'，判定结果是：{judge_result}。\n"
-            f"请用生动的语言描述在1920年代阿卡姆小镇发生了什么，营造神秘而压抑的氛围，保持时代特色。"
+            f"你是TRPG世界观的叙述AI。用户刚才说：'{user_input}'，判定结果是：{judge_result}。请用生动的语言描述在这个世界观下发生了什么。"
         )
     else:
         prompt = (
-            f"{world_view}\n\n"
-            f"你是TRPG:Call of Cthulhu世界观的叙述AI。基于上述世界观设定，用户刚才说：'{user_input}'。\n"
-            f"请用生动的语言描述在1920年代阿卡姆小镇发生了什么，营造神秘而压抑的氛围，保持时代特色。"
+            f"你是TRPG世界观的叙述AI。用户刚才说：'{user_input}'。请用生动的语言描述在这个世界观下发生了什么。"
         )
     completion = client.chat.completions.create(
         model="kimi-k2-0711-preview",
         messages=[
             {
                 "role": "system",
-                "content": "你是TRPG:Call of Cthulhu世界观的叙述AI，基于1920年代阿卡姆世界观进行描述，营造神秘而压抑的氛围。"
+                "content": "你是TRPG世界观的叙述AI，只输出故事描述。"
             },
             {
                 "role": "user",
