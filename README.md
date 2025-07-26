@@ -71,10 +71,6 @@ AllStory的核心是一个精巧的**回合制循环系统**。我们放弃了�
 2. **后端设置 (FastAPI)**
 
    ```bash
-   # 进入后端目录
-   cd backend 
-
-   # (推荐) 创建并激活虚拟环境
    python -m venv venv
    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
 
@@ -84,7 +80,6 @@ AllStory的核心是一个精巧的**回合制循环系统**。我们放弃了�
    # 配置API Key
    cp .env.example .env
    ```
-
    然后，编辑`.env`文件，填入你的`MOONSHOT_API_KEY`。
 
 3. **前端设置 (Next.js)**
@@ -102,8 +97,8 @@ AllStory的核心是一个精巧的**回合制循环系统**。我们放弃了�
    * **启动后端API服务:**
 
      ```bash
-     # 在 backend 目录下运行
-     uvicorn main:app --reload --host 0.0.0.0 --port 8000
+     # 在根目录下运行
+     uvicorn AllStory:app --reload --host 0.0.0.0 --port 8000
      ```
    * **启动前端开发服务:**
 
